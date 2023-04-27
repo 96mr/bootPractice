@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberDTO {
+public class MemberDto {
 	@NotBlank
 	@Pattern(regexp="^[a-zA-z0-9]{4,20}$", message="4~20자리의 영문자와 숫자로 입력해주세요")
 	private String id;
@@ -37,7 +37,7 @@ public class MemberDTO {
 				.name(name)
 				.email(email)
 				.regdate(regdate)
-				.auth("ROLE_USER")
+				.auth("ROLE_GUEST")
 				.build();
 		return member;
 	}

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.bootPractice.entity.Member;
-import com.spring.bootPractice.entity.MemberDTO;
+import com.spring.bootPractice.entity.MemberDto;
 import com.spring.bootPractice.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -18,15 +18,15 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	
 	@Transactional
-	public Member save(MemberDTO memberDto) {
+	public void save(MemberDto memberDto) {
 		duplicateId(memberDto.getId());
 		duplicateEmail(memberDto.getEmail());
 	
 		memberDto.setPassword(passwordEncoder.encode(memberDto.getPassword()));
 		Member member = memberDto.toEntity();
-		return memberRepository.save(member);
+		memberRepository.save(member);
 	}
-
+	
 	public void duplicateId(String id) {
 		memberRepository.findById(id)
 						.ifPresent(m-> {

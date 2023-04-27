@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.spring.bootPractice.entity.MemberDTO;
+import com.spring.bootPractice.entity.MemberDto;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -17,7 +17,7 @@ class MemberServiceTest {
 	
 	@Test
 	void test() {
-		MemberDTO dto = new MemberDTO();
+		MemberDto dto = new MemberDto();
 		dto.setId("exmkl");
 		dto.setPassword("qwer1234");
 		dto.setName("aaa");
