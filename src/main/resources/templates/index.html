@@ -19,6 +19,7 @@
 
 			<div class="p-1 m-4 border" sec:authorize="isAuthenticated()">
 					<span sec:authentication="name"/></span>님
+					권한 : <span sec:authentication="authorities"></span>
 			</div>
 			
 			<a class="btn btn-outline-dark btn-block" th:href="@{/member/page}" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">회원 페이지</a>
@@ -30,5 +31,13 @@
 			</form>
 		</div>
 	</div>
+	<script th:inline="javascript">
+		$(document).ready(function(){
+			var msg = [[${msg}]];
+			if(msg) {
+				alert(msg);
+			}
+		});
+	</script>
 </body>
 </html>

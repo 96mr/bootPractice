@@ -10,4 +10,5 @@ import com.spring.bootPractice.entity.Member;
 @Repository
 public interface MemberRepository extends JpaRepository<Member,Long> {
 	public Optional<Member> findById(String id);
+	public Optional<Member> findByEmail(String email);
 }

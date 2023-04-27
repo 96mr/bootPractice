@@ -34,8 +34,8 @@ public class SecurityConfiguration{
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		http
 			.authorizeHttpRequests((authz)->authz			//요청에 대한 권한 설정
-							.antMatchers("/member/**").hasAnyRole("ROLE_USER","ROLE_ADMIN")
-							.antMatchers("/admin/**").hasRole("ROLE_ADMIN")
+							.antMatchers("/member/**").hasAnyRole("USER","ADMIN")
+							.antMatchers("/admin/**").hasRole("ADMIN")
 							.antMatchers("/**").permitAll()
 							.anyRequest().authenticated()
 			);
@@ -54,8 +54,7 @@ public class SecurityConfiguration{
 				.invalidateHttpSession(true)
 			.and()
 				.csrf()
-					.ignoringAntMatchers("/login")
-					.ignoringAntMatchers("/register");
+					.disable();
 		return http.build();
 	}
 
