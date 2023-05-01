@@ -1,11 +1,11 @@
-package com.spring.bootPractice.repository;
+package com.spring.bootPractice.member.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.spring.bootPractice.entity.Member;
+import com.spring.bootPractice.member.entity.Member;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member,Long> {

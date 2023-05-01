@@ -21,7 +21,7 @@
 					<span sec:authentication="name"/></span>님
 					권한 : <span sec:authentication="authorities"></span>
 			</div>
-			
+			<a class="btn btn-outline-dark btn-block" th:href="@{/register/confirm}" sec:authorize="hasRole('ROLE_GUEST')">이메일 인증을 완료하세요.</a>	
 			<a class="btn btn-outline-dark btn-block" th:href="@{/member/page}" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">회원 페이지</a>
 			<a class="btn btn-outline-dark btn-block" th:href="@{/admin/page}" sec:authorize="hasRole('ROLE_ADMIN')">관리자 페이지</a>
 			

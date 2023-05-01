@@ -1,4 +1,4 @@
-package com.spring.bootPractice.service;
+package com.spring.bootPractice.member.service;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.spring.bootPractice.entity.MemberDetail;
+import com.spring.bootPractice.member.entity.MemberDetail;
 
 @Component
 public class MemberAuthenticationProvider implements AuthenticationProvider {
@@ -37,7 +37,7 @@ public class MemberAuthenticationProvider implements AuthenticationProvider {
 			throw new BadCredentialsException("사용 불가능한 회원입니다.");
 		}
 
-		return new UsernamePasswordAuthenticationToken(username, password, member.getAuthorities());
+		return new UsernamePasswordAuthenticationToken(member, password, member.getAuthorities());
 	}
 
 	@Override

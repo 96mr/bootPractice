@@ -1,4 +1,4 @@
-package com.spring.bootPractice.entity;
+package com.spring.bootPractice.member.dto;
 
 import lombok.Builder;
 import lombok.Getter;

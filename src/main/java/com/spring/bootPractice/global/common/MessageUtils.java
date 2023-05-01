@@ -1,4 +1,4 @@
-package com.spring.bootPractice.common;
+package com.spring.bootPractice.global.common;
 
 import org.springframework.context.MessageSource;
 

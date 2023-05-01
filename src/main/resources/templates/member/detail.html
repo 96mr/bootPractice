@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
@@ -11,7 +11,18 @@
 	<title>Insert title here</title>
 </head>
 <body>
-	<h3 th:text="detail"></h3>
-	<span th:text="${session.session}"></span>
+	<h3 class="text-center m-4" th:text="'회원 정보'"></h3>
+	<div class="container w-50 text-center mt-4">
+		<div class="">
+			<div class="p-1 m-4" sec:authorize="isAuthenticated()">
+					<span sec:authentication="name"/></span>님
+					권한 : <span sec:authentication="authorities"></span>
+					<span sec:authentication="principal.username"></span>
+			</div>
+			<div class="p-1 m-4" sec:authorize="isAuthenticated()">
+					<span th:text="${member.member.name}"/></span>님 <br>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

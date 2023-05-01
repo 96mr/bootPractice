@@ -1,13 +1,13 @@
-package com.spring.bootPractice.service;
+package com.spring.bootPractice.member.service;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.spring.bootPractice.entity.Member;
-import com.spring.bootPractice.entity.MemberDetail;
-import com.spring.bootPractice.repository.MemberRepository;
+import com.spring.bootPractice.member.entity.Member;
+import com.spring.bootPractice.member.entity.MemberDetail;
+import com.spring.bootPractice.member.repository.MemberRepository;
 
 @Service
 public class MemberDetailService implements UserDetailsService{

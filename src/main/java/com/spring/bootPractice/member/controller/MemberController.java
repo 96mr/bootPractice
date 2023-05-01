@@ -1,10 +1,12 @@
-package com.spring.bootPractice.Controller;
+package com.spring.bootPractice.member.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,12 +15,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.spring.bootPractice.entity.MailDto;
-import com.spring.bootPractice.entity.MemberDto;
-import com.spring.bootPractice.service.MailService;
-import com.spring.bootPractice.service.MemberService;
+import com.spring.bootPractice.member.dto.MailResponseDto;
+import com.spring.bootPractice.member.dto.MemberDto;
+import com.spring.bootPractice.member.entity.Member;
+import com.spring.bootPractice.member.entity.MemberDetail;
+import com.spring.bootPractice.member.service.MailService;
+import com.spring.bootPractice.member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +42,7 @@ public class MemberController {
 	@RequestMapping(value="/login", method = {RequestMethod.GET, RequestMethod.POST})
 	public String login(HttpServletRequest request, Authentication authentication) {
 		System.out.println("login");
-
+		System.out.println(authentication);
 		if(authentication != null) {
 			return "redirect:/";
 		}
@@ -58,15 +63,15 @@ public class MemberController {
 	}
 	
 	@PostMapping(value="/register")
-	public String regitser(@Valid @ModelAttribute("member") MemberDto member, BindingResult bindingResult, 
-							HttpServletRequest request, RedirectAttributes rttr, Model model) {
+	public String regitser(@Valid @ModelAttribute("member") MemberDto memberDto, BindingResult bindingResult, 
+							HttpSession session, RedirectAttributes rttr, Model model) {
 		if(bindingResult.hasErrors()) {
 			return "register";
 		}
 		try {
-			memberService.save(member);
-			MailDto mailDto = mailService.createAuthKeyMail(request.getSession(), member.getEmail());
-			mailService.sendMail(mailDto);	
+			Member member = memberService.save(memberDto);
+			MailResponseDto mailResponseDto = mailService.createAuthKeyMail(member);
+			session.setAttribute("authMail", mailResponseDto);
 		}catch(IllegalStateException e) {
 			model.addAttribute("errorMsg", e.getMessage());
 			return "register";
@@ -82,24 +87,30 @@ public class MemberController {
 	}
 	
 	@PostMapping(value="/register/confirm")
-	public String registerConfirm(HttpServletRequest request, RedirectAttributes rttr, Model model) {
-		HttpSession session = request.getSession();
-		String inputKey = request.getParameter("num");
-		String authKey = (String) session.getAttribute("emailAuthKey");
-		
-		if(authKey.equals(inputKey) ) {
-			session.removeAttribute("emailAuthKey");
-			rttr.addFlashAttribute("msg", "인증되었습니다. 로그인 후 서비스 이용이 가능합니다.");
-			return "redirect:/login";
+	public String registerConfirm(@RequestParam String code, HttpSession session, RedirectAttributes rttr, Model model) {
+		MailResponseDto mailResponseDto = (MailResponseDto) session.getAttribute("authMail");
+		if(memberService.updateMemberAuth(mailResponseDto, code)) {
+			
+			//계정의 권한 정보 가져옴
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			if(authentication != null)
+				memberService.createNewAuthentication(authentication);
+			session.invalidate();
+			rttr.addFlashAttribute("msg", "인증되었습니다.");
+			return "redirect:/";
 		}else {
 			model.addAttribute("errorMsg", "인증 번호를 다시 확인해주세요.");
 			return "mailConfirm";
 		}
 	}
-	
+
 	@GetMapping(value="/member/page")
-	public String memberDetail(Authentication authentication) {
-		
+	public String memberDetail(@AuthenticationPrincipal MemberDetail memberDetail, Model model) {
+		if(memberDetail != null) {
+			model.addAttribute("member", memberDetail);
+		}else {
+			model.addAttribute("member", "존재하지 않습니다.");
+		}
 		return "member/detail";
 	}
 	

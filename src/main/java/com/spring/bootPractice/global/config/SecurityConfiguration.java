@@ -1,4 +1,4 @@
-package com.spring.bootPractice.config;
+package com.spring.bootPractice.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.spring.bootPractice.handler.LoginFailureHandler;
-import com.spring.bootPractice.handler.LoginSuccessHandler;
+import com.spring.bootPractice.member.handler.LoginFailureHandler;
+import com.spring.bootPractice.member.handler.LoginSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -34,7 +34,7 @@ public class SecurityConfiguration{
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		http
 			.authorizeHttpRequests((authz)->authz			//요청에 대한 권한 설정
-							.antMatchers("/member/**").hasAnyRole("USER","ADMIN")
+							.antMatchers("/member/**").hasAnyRole("GUEST","USER","ADMIN")
 							.antMatchers("/admin/**").hasRole("ADMIN")
 							.antMatchers("/**").permitAll()
 							.anyRequest().authenticated()

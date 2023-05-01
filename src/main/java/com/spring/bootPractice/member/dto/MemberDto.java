@@ -1,4 +1,4 @@
-package com.spring.bootPractice.entity;
+package com.spring.bootPractice.member.dto;
 
 import java.util.Date;
 
@@ -6,12 +6,18 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Data
+import com.spring.bootPractice.member.entity.Member;
+import com.spring.bootPractice.member.entity.Role;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberDto {
@@ -27,19 +33,17 @@ public class MemberDto {
 	@Email
 	private String email;
 	private Date regdate;
-	private String auth;
+	private Role auth;
 
-	@Builder
-	public Member toEntity() {
+	public Member toEntity(PasswordEncoder passwordEncoder) {
 		Member member = Member.builder()
 				.id(id)
-				.password(password)
+				.password(passwordEncoder.encode(password))
 				.name(name)
 				.email(email)
 				.regdate(regdate)
-				.auth("ROLE_GUEST")
+				.auth(Role.ROLE_GUEST)
 				.build();
 		return member;
 	}
-
 }

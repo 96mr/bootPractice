@@ -1,4 +1,4 @@
-package com.spring.bootPractice.handler;
+package com.spring.bootPractice.member.handler;
 
 import java.io.IOException;
 
