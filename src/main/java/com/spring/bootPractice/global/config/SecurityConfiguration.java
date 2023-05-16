@@ -17,7 +17,7 @@ import com.spring.bootPractice.member.handler.LoginSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration{
 	
 	@Bean	//service, passwordEncoder 자동설정 됨

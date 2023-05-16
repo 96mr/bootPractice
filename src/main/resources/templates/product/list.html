@@ -11,39 +11,33 @@
 	<title>메인페이지</title>
 </head>
 <body>
-	<h3 class="text-center m-4" th:text="'Spring Boot 연습 중'"></h3>
+	<h3 class="text-center m-4" th:text="'제품 리스트'"></h3>
 	<div class="container w-50 text-center">
 		<div class="container">
-			<a class="btn btn-outline-dark btn-block" th:href="@{/register}" sec:authorize="!isAuthenticated()">회원가입</a>
-			<a class="btn btn-outline-dark btn-block" th:href="@{/login}" sec:authorize="!isAuthenticated()">로그인</a>
-
-		<nav class="navbar navbar-expand-sm navbar-light">
-			<ul class="navbar-nav m-auto text-center">
-				<li>
-					<div sec:authorize="isAuthenticated()">
-						<span sec:authentication="name"/></span>님
+			<nav class="navbar navbar-expand-sm navbar-light bg-light">
+				<ul class="navbar-nav m-auto text-center">
+					<li th:each = "category : ${category}" class="nav-item active m-4">
+						<a class="nav-link h5" th:text="${category.name}"></a>
+						<ul class="list-unstyled m-auto text-center">
+							<li class="nav-item active" th:each = "subCategory : ${category.children}">
+								<a class="nav-link" th:text="${subCategory.name}" th:href="@{/products/list(category=${subCategory.name})}"></a>
+							</li>
+						</ul>
+						
+					</li>
+				</ul>
+			</nav>
+			<div class="row">
+				<div class="col-md-4 p-4" th:each = "list : ${productList}"> 
+					<div class="card" th:onclick="|location.href='@{/products/{id} (id = ${list.pid})}'|">	
+						<img th:src="'/bootPractice/attach/'+ ${list.thumbnail[0].save_name} + ${list.thumbnail[0].extension}" class="card-img-top" style="height:100px"/>
+						<div class="card-body">
+							<h6 class="card-title" th:text="${list.pname}"></h6>
+							<span class="card-text" th:text="${list.price}"></span>원
+						</div>
 					</div>
-				</li>
-				<li class="nav-item active">
-					<a class="nav-link" th:href="@{/register/confirm}" sec:authorize="hasRole('ROLE_GUEST')">이메일 인증을 완료하세요.</a>	
-				</li>
-				<li class="nav-item active">
-					<a class="nav-link" th:href="@{/member/page}" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">회원 페이지</a>
-				</li>
-				<li class="nav-item active">
-					<a class="nav-link" th:href="@{/products}" sec:authorize="hasRole('ROLE_ADMIN')">관리자 페이지</a>
-				</li>
-				<li class="nav-item active">
-					<form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
-						<sec:csrfInput />
-						<button type="submit" class="btn btn-outline-dark btn-block">로그아웃</button>
-					</form>
-				</li>
-			</ul>
-		</nav>
-		
-		
-			<a class="btn btn-outline-dark btn-block" th:href="@{/products}">상품 페이지</a>	
+				</div>
+			</div>	
 		</div>
 	</div>
 	<script th:inline="javascript">

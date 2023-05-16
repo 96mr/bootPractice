@@ -15,12 +15,7 @@
 	<div class="container w-50 text-center mt-4">
 		<div class="">
 			<div class="p-1 m-4" sec:authorize="isAuthenticated()">
-					<span sec:authentication="name"/></span>님
-					권한 : <span sec:authentication="authorities"></span>
-					<span sec:authentication="principal.username"></span>
-			</div>
-			<div class="p-1 m-4" sec:authorize="isAuthenticated()">
-					<span th:text="${member.member.name}"/></span>님 <br>
+				<h5 class="text-center" th:text="${member.member.name}"> </h5>님 
 			</div>
 		</div>
 	</div>
