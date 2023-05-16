@@ -47,6 +47,7 @@ public class MemberService {
 						});
 	}
 	
+	@Transactional
 	public boolean updateMemberAuth(MailResponseDto dto, String formData) {
 		String authKey = dto.getKey();
 		if(authKey.equals(formData)) {

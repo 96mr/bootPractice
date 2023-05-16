@@ -9,6 +9,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.bootPractice.member.dto.MailDto;
 import com.spring.bootPractice.member.dto.MailResponseDto;
@@ -23,6 +24,7 @@ public class MailService {
 	private final JavaMailSender mailSender;
 	
 	//인증번호 메일 생성
+	@Transactional
 	public MailResponseDto createAuthKeyMail(Member member) {
 		String authKey = createKey(6);
 		
@@ -37,7 +39,7 @@ public class MailService {
 						)
 				.from("EmailTest")
 				.build();
-		//sendMail(mailDto);		
+		sendMail(mailDto);		
 		MailResponseDto mailResponseDto = new MailResponseDto(member.getId(), authKey); 
 		return mailResponseDto;
 	}
