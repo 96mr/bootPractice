@@ -22,7 +22,7 @@
 			<p class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
 			<input type="email" th:field="*{email}" class="form-control p-4 mb-4" placeholder="이메일을 입력하세요">
 			<p class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
-			<!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"> -->
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 			<button type="submit" class="btn btn-outline-dark btn-block" name="button">회원가입</button>
 		</form>
 	</div>

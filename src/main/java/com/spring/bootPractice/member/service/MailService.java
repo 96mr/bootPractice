@@ -39,7 +39,7 @@ public class MailService {
 						)
 				.from("EmailTest")
 				.build();
-		sendMail(mailDto);		
+		sendMail(mailDto);
 		MailResponseDto mailResponseDto = new MailResponseDto(member.getId(), authKey); 
 		return mailResponseDto;
 	}

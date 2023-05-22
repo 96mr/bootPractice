@@ -33,11 +33,6 @@ public class MemberController {
 	
 	private final MemberService memberService;
 	private final MailService mailService;
-	
-	@GetMapping(value="/")
-	public String index() {
-		return "index";
-	}
 
 	@RequestMapping(value="/login", method = {RequestMethod.GET, RequestMethod.POST})
 	public String login(HttpServletRequest request, Authentication authentication) {
@@ -112,6 +107,11 @@ public class MemberController {
 			model.addAttribute("member", "존재하지 않습니다.");
 		}
 		return "member/detail";
+	}
+	
+	@GetMapping(value="/denied")
+	public String denied(Model model) {
+		return "member/denied";
 	}
 	
 }

@@ -11,7 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
+import com.spring.bootPractice.member.handler.CustomAccessDeniedHandler;
 import com.spring.bootPractice.member.handler.LoginFailureHandler;
 import com.spring.bootPractice.member.handler.LoginSuccessHandler;
 
@@ -53,13 +55,20 @@ public class SecurityConfiguration{
 				.logoutSuccessUrl("/")
 				.invalidateHttpSession(true)
 			.and()
-				.csrf()
-					.disable();
+				.exceptionHandling()
+				.accessDeniedHandler(accessDeniedHandler());
 		return http.build();
 	}
 
 	@Bean
 	public PasswordEncoder getPasswordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean
+	public AccessDeniedHandler accessDeniedHandler() {
+		CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler();
+		accessDeniedHandler.setErrorPage("/denied");
+		return accessDeniedHandler;
 	}
 }
