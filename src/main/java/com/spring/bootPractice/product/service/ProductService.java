@@ -3,13 +3,15 @@ package com.spring.bootPractice.product.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,34 +53,34 @@ public class ProductService {
 			image.setCategory(ImageCategory.PRODUCT);
 			imageRepository.save(image.toEntity());
 		}
-		return product.getPcategory().getName();
+		return productDto.getPcategory().getName();
 	}
 	
-	
-	public List<ProductResponseDto> read(String category) {
-		List<Product> product = new ArrayList<>();
-		if(category != null) {
+	public Page<ProductResponseDto> productList(String category, Pageable pageable) {
+		int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber()-1);
+		pageable = PageRequest.of(page, pageable.getPageSize(), pageable.getSort());
+		Page<Product> product;
+		if(category.equals("main")) {
+			product = productRepository.findAll(pageable);
+		}else {		
 			Category pcategory = categoryRepository.findByName(category)
 					.orElseThrow(()-> new IllegalStateException("존재하지 않는 카테고리입니다."));
-			product = productRepository.findByPcategory(pcategory);
-		}else {		
-			product = productRepository.findAll();
+			product = (pcategory.getParent() == null) ? 
+					productRepository.categoryByParent(pcategory, pageable):
+					productRepository.findByPcategory(pcategory, pageable);
 		}
-		List<ProductResponseDto> dtoList = new ArrayList<>();
-		for(Product p : product) {
-			dtoList.add(new ProductResponseDto(p));
-		}
+		Page<ProductResponseDto> dtoList = product.map(p->new ProductResponseDto(p));
 		
 		return dtoList;
 	}
 	
 	public ProductResponseDto getProductInfo(int pid) {
 		Product product= productRepository.findByPid(pid)
-										.orElseThrow(()-> new IllegalStateException("존재하지 않는 상품입니다."));
+							.orElseThrow(()-> new IllegalStateException("존재하지 않는 상품입니다."));
 		return new ProductResponseDto(product);
 	}
 	
-	public JsonObject uploadImage(MultipartFile multipartFile) {
+	public JsonObject uploadSummerNoteImage(MultipartFile multipartFile) {
 		JsonObject json = new JsonObject();
 	
 		String orgName = multipartFile.getOriginalFilename();

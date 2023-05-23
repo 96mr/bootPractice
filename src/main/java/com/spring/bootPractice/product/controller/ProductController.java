@@ -1,9 +1,14 @@
 package com.spring.bootPractice.product.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,15 +38,34 @@ public class ProductController {
 	private final ProductService productService;
 	private final CategoryService categoryService;
 	
-	@GetMapping(value="/products/list")
-	public String read(@RequestParam(value="category", required= false) String category, Model model) {
-		List<ProductResponseDto> list = productService.read(category);
+	@GetMapping(value= {"/", "index"})
+	public String index(@PageableDefault(page = 0, size = 4, sort ="hit", direction = Sort.Direction.DESC ) Pageable pageable,
+						Model model) {
+		Page<ProductResponseDto> list = productService.productList("main", pageable);
 		model.addAttribute("productList", list);
-		model.addAttribute("category", categoryService.allList());
+		model.addAttribute("categoryList", categoryService.getAllList());
+		return "index";
+	}
+	
+	@GetMapping(value= {"/products/{category}","/products/{category}/{subCategory}"})
+	public String categoryList(@PathVariable("category") String category, 
+					   @PathVariable(value="subCategory",required=false) Optional<String> subCategory, 
+					   @PageableDefault(page = 0, size = 8, sort ="regdate", direction = Sort.Direction.DESC) Pageable pageable,
+					   Model model) {
+		Page<ProductResponseDto> list;
+		if(subCategory.isPresent()) {
+			list = productService.productList(subCategory.get(), pageable);
+			model.addAttribute("curSubCategory", subCategory.get());
+		}else {
+			list = productService.productList(category, pageable);
+		}
+		model.addAttribute("productList", list)
+			 .addAttribute("categoryList", categoryService.getAllList())
+			 .addAttribute("curCategory", category);	
 		return "/product/list";
 	}
 	
-	@GetMapping(value="/products/{id}")
+	@GetMapping(value="/product/{id}")
 	public String productInfo(@PathVariable("id") int id, Model model) {
 		ProductResponseDto product = productService.getProductInfo(id);
 		model.addAttribute("info", product);
@@ -49,26 +73,25 @@ public class ProductController {
 	}
 	
 	@Secured("ROLE_ADMIN")
-	@GetMapping(value="/products")
+	@GetMapping(value="/product")
 	public String save(Model model) {
 		model.addAttribute("product", new ProductRequestDto());
-		model.addAttribute("category", categoryService.childrenList());
+		model.addAttribute("category", categoryService.getChildrenList());
 		return "product/create";
 	}
 	
-	@Secured("ROLE_ADMIN")
-	@PostMapping(value = "/products")
+	@PostMapping(value = "/product")
 	public String save(@Valid @ModelAttribute("product") ProductRequestDto productDto, BindingResult result, 
 						@RequestPart(value="thumbnail", required = false) List<MultipartFile> files,
 						RedirectAttributes rttr, Model model) {
 		if(result.hasErrors()) {
-			model.addAttribute("category", categoryService.childrenList());
+			model.addAttribute("category", categoryService.getChildrenList());
 			return "product/create";
 		}
 		String category = productService.save(productDto, files);
 		if(category != null) {
 			rttr.addFlashAttribute("msg", "상품이 추가되었습니다.");
-			return "redirect:/products/list";
+			return "redirect:/index";
 		}else {
 			model.addAttribute("msg", "다시 시도해주세요.");
 			return "/product/create";
@@ -78,8 +101,8 @@ public class ProductController {
 	@Secured("ROLE_ADMIN")
 	@PostMapping(value = "/product/uploadImage")
 	@ResponseBody
-	public JsonObject uploadImage(@RequestParam("file") MultipartFile multipartFile) {
-		return productService.uploadImage(multipartFile);
+	public JsonObject uploadSummerNoteImage(@RequestParam("file") MultipartFile multipartFile) {
+		return productService.uploadSummerNoteImage(multipartFile);
 	}
 	
 }

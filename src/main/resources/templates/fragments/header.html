@@ -1,6 +1,40 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
 	<div th:fragment="header">
-		<div class="text-center h3">스프링 부트 연습 쇼핑몰</div>
+		<nav class="navbar navbar-expand-sm navbar-light bg-light pl-2 pr-2">
+			<a th:href="@{/index}" class="navbar-brand">스프링 부트 연습 쇼핑몰</a>
+			
+			 <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar">
+	            <span class="navbar-toggler-icon"></span>
+	        </button>
+			<div id="navbar" class="navbar-collapse collapse" aria-expanded="false">
+                <ul class="nav navbar-nav navbar-right ml-auto">
+                	<li sec:authorize="!isAuthenticated()">
+						<a class="nav-link active" th:href="@{/register}">회원가입</a>
+					</li>
+					<li sec:authorize="!isAuthenticated()">
+						<a class="nav-link active" th:href="@{/login}">로그인</a>
+					</li>
+					<li class="nav-item active">
+						<a class="nav-link" th:href="@{/register/confirm}" sec:authorize="hasRole('ROLE_GUEST')">이메일 인증을 완료하세요.</a>	
+					</li>
+                    <li class="nav-item active" role="presentation">
+                    	<a class="nav-link" th:href="@{/member/page}" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">마이페이지</a>
+                    </li>
+                    <li class="nav-item active" role="presentation">
+                    	<a class="nav-link" th:href="@{/member/page}" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">장바구니</a>
+                    </li>
+                    <li class="nav-item active" role="presentation">
+                    	<a class="nav-link" th:href="@{/product}" sec:authorize="hasRole('ROLE_ADMIN')">제품등록</a>
+                    </li>
+                    <li class="nav-item">
+						<form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+							<sec:csrfInput />
+							<button type="submit" class="btn">로그아웃</button>
+						</form>
+					</li>
+                </ul>
+            </div>
+		</nav>
 	</div>
 </html>

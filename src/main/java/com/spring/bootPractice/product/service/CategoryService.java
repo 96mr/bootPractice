@@ -18,13 +18,13 @@ public class CategoryService {
 	private final CategoryRepository categoryRepository;
 	
 	@Transactional
-	public List<CategoryDto> allList(){
+	public List<CategoryDto> getAllList(){
 		List<Category> list = categoryRepository.findByParentIsNullOrderByIdAsc();
 		return list.stream().map(CategoryDto::new).collect(Collectors.toList());
 	}
 	
 	@Transactional
-	public List<CategoryDto> childrenList(){
+	public List<CategoryDto> getChildrenList(){
 		List<Category> list = categoryRepository.findByParentNotNullOrderByIdAsc();
 		return list.stream().map(CategoryDto::new).collect(Collectors.toList());
 	}

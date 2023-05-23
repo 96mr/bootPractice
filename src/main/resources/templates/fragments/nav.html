@@ -1,31 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
 	<div th:fragment="nav">
-		<a class="btn btn-outline-dark btn-inlineblock" th:href="@{/register}" sec:authorize="!isAuthenticated()">회원가입</a>
-		<a class="btn btn-outline-dark btn-inlineblock" th:href="@{/login}" sec:authorize="!isAuthenticated()">로그인</a>
-		<nav class="navbar navbar-expand-sm navbar-light">
-			<ul class="navbar-nav m-auto text-center">
-				<li>
-					<div sec:authorize="isAuthenticated()">
-						<span sec:authentication="name"/></span>님
-					</div>
-				</li>
-				<li class="nav-item active">
-					<a class="nav-link" th:href="@{/register/confirm}" sec:authorize="hasRole('ROLE_GUEST')">이메일 인증을 완료하세요.</a>	
-				</li>
-				<li class="nav-item active">
-					<a class="nav-link" th:href="@{/member/page}" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">회원 페이지</a>
-				</li>
-				<li class="nav-item active">
-					<a class="nav-link" th:href="@{/products}" sec:authorize="hasRole('ROLE_ADMIN')">관리자 페이지</a>
-				</li>
-				<li class="nav-item active">
-					<form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
-						<sec:csrfInput />
-						<button type="submit" class="btn btn-outline-dark btn-block">로그아웃</button>
-					</form>
-				</li>
-			</ul>
-		</nav>
 	</div>
 </html>
