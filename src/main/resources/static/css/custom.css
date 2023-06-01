@@ -3,13 +3,16 @@
 @media screen and (min-width: 1200px){
 	.main-slider{height:80vh}
 	.product-list img{height:200px}
+	#product-info-img{height:400px;}
 }
 @media screen and (max-width: 1000px){
 	.main-slider{height:40vh}
-	.product-list img{height:200px}
+	.product-list img{height:100px}
+	#product-info-img{height:300px;}
 }
 @media screen and (max-width: 768px){
 	.main-slider{height:30vh}
-	.product-list img{height:200px}
+	.product-list img{height:100px}
+	#product-info-img{height:200px;}
 }
 li.dropdown:hover > ul.dropdown-menu {display:block; margin:0;}

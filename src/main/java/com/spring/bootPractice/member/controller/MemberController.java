@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.spring.bootPractice.member.dto.AddressResponseDto;
 import com.spring.bootPractice.member.dto.MailResponseDto;
-import com.spring.bootPractice.member.dto.MemberDto;
+import com.spring.bootPractice.member.dto.MemberRequestDto;
+import com.spring.bootPractice.member.dto.MemberResponseDto;
 import com.spring.bootPractice.member.entity.Member;
 import com.spring.bootPractice.member.entity.MemberDetail;
+import com.spring.bootPractice.member.service.AddressService;
 import com.spring.bootPractice.member.service.MailService;
 import com.spring.bootPractice.member.service.MemberService;
 
@@ -32,12 +35,11 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 	
 	private final MemberService memberService;
+	private final AddressService addressService;
 	private final MailService mailService;
 
 	@RequestMapping(value="/login", method = {RequestMethod.GET, RequestMethod.POST})
 	public String login(HttpServletRequest request, Authentication authentication) {
-		System.out.println("login");
-		System.out.println(authentication);
 		if(authentication != null) {
 			return "redirect:/";
 		}
@@ -53,12 +55,12 @@ public class MemberController {
 		if(authentication != null) {
 			return "/";
 		}
-		model.addAttribute("member", new MemberDto());
+		model.addAttribute("member", new MemberRequestDto());
 		return "register";
 	}
 	
 	@PostMapping(value="/register")
-	public String regitser(@Valid @ModelAttribute("member") MemberDto memberDto, BindingResult bindingResult, 
+	public String regitser(@Valid @ModelAttribute("member") MemberRequestDto memberDto, BindingResult bindingResult, 
 							HttpSession session, RedirectAttributes rttr, Model model) {
 		if(bindingResult.hasErrors()) {
 			return "register";
@@ -102,11 +104,14 @@ public class MemberController {
 	@GetMapping(value="/member/page")
 	public String memberDetail(@AuthenticationPrincipal MemberDetail memberDetail, Model model) {
 		if(memberDetail != null) {
-			model.addAttribute("member", memberDetail);
+			Member member = memberDetail.getMember();
+			//AddressResponseDto address = addressService.getAddressById(member);
+			model.addAttribute("member", new MemberResponseDto(member));
+			//model.addAttribute("address", address);
 		}else {
 			model.addAttribute("member", "존재하지 않습니다.");
 		}
-		return "member/detail";
+		return "member/info";
 	}
 	
 	@GetMapping(value="/denied")

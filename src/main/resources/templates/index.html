@@ -20,8 +20,7 @@
 							<a class="nav-link dropdown-item" th:text="${subCategory.name}" 
 								th:href="@{/products/{category}/{subCategory} (category=${category.name}, subCategory=${subCategory.name})}"></a>
 						</li>
-					</ul>
-					
+					</ul>			
 				</li>
 			</ul>
 		</nav>
@@ -45,16 +44,16 @@
 
 		</div>
 		<div class="row m-4">
-				<div class="col-md-3 p-4" th:each = "list : ${productList}"> 
-					<div class="card product-list" th:onclick="|location.href='@{/product/{id} (id = ${list.pid})}'|">	
-						<img th:src="'/bootPractice/attach/'+ ${list.thumbnail[0].save_name} + ${list.thumbnail[0].extension}" class="card-img-top"/>
-						<div class="card-body">
-							<h6 class="card-title" th:text="${list.pname}"></h6>
-							<span class="card-text" th:text="${list.price}"></span>원
-						</div>
+			<div class="col-md-3 p-4" th:each = "list : ${productList}"> 
+				<div class="card product-list" th:onclick="|location.href='@{/product/{id} (id = ${list.pid})}'|">	
+					<img th:src="'/bootPractice/attach/'+ ${list.thumbnail[0].save_name} + ${list.thumbnail[0].extension}" class="card-img-top"/>
+					<div class="card-body">
+						<h6 class="card-title" th:text="${list.pname}"></h6>
+						<span class="card-text" th:text="${list.price}"></span>원
 					</div>
 				</div>
 			</div>
+		</div>
 	</div>
 	<script th:inline="javascript">
 		$(document).ready(function(){

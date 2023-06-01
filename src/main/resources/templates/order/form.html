@@ -12,15 +12,8 @@
 <div layout:fragment="content">
 	<div class="container justify-content-center text-center p-4">
 		<h2 th:text="상품등록"></h2>
-		<form class="w-70 p-4 mx-auto justify-content-center row" enctype="multipart/form-data" method="post" 
-					th:action="@{/products(${_csrf.parameterName}=${_csrf.token})}" th:object="${product}">
-			<div class="col-sm-5 p-2">
-				<div id="previewImage" class="m-2">
-					<img src="/bootPractice/e2744416-06fa-46cb-9277-58780fa97617.png" class="img-thumbnail img-fluid p-2"/>
-				</div>
-				<label for="thumbnail" class="btn btn-outline-dark btn-block">썸네일 이미지 선택</label>
-				<input type ="file" id="thumbnail" name="thumbnail" class="d-none" accept="image/png, image/jpeg"/>
-			</div>
+		<form class="w-70 p-4 mx-auto justify-content-center row" method="post" 
+					th:action="@{/purchase(${_csrf.parameterName}=${_csrf.token})}" th:object="${order}">
 			<div class="col-sm-6 p-4 mt-4 mb-4">
 				<select class="form-select form-select-sm w-100 p-2 mb-4" th:field="*{pcategory}" aria-label="카테고리">
 					<option th:each="pcategory : ${category}" th:value="${pcategory.id}" th:text="${pcategory.name}"></option>
@@ -54,8 +47,6 @@
 		});
 	</script>
 	<script>
-	var header = $("meta[name='_csrf_header']").attr('content');
-	var token = $("meta[name='_csrf']").attr('content');
 		$('#summernote').summernote({
 	        placeholder: '제품에 대한 설명을 작성해주세요',
 	        tabsize: 2,
@@ -98,9 +89,6 @@
 					contentType : false,
 					enctype : 'multipart/form-data',
 					processData : false,
-					beforeSend: function(xhr){
-				        xhr.setRequestHeader(header, token);
-				    },
 					success : function(data) {
 						$(el).summernote('editor.insertImage', data.url);
 						console.log(data);

@@ -6,8 +6,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.spring.bootPractice.member.entity.Member;
 import com.spring.bootPractice.member.entity.Role;
 
@@ -20,7 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberDto {
+public class MemberRequestDto {
 	@NotBlank
 	@Pattern(regexp="^[a-zA-z0-9]{4,20}$", message="4~20자리의 영문자와 숫자로 입력해주세요")
 	private String id;
@@ -35,10 +33,10 @@ public class MemberDto {
 	private Date regdate;
 	private Role auth;
 
-	public Member toEntity(PasswordEncoder passwordEncoder) {
+	public Member toEntity() {
 		Member member = Member.builder()
 				.id(id)
-				.password(passwordEncoder.encode(password))
+				.password(password)
 				.name(name)
 				.email(email)
 				.regdate(regdate)

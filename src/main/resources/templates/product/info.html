@@ -3,25 +3,35 @@
 	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
-<div layout:fragment="content">
-	<h3 class="text-center m-4" th:text="'제품 상세 페이지'"></h3>
-	<div class="container w-50 text-center">
-		<div class="container">
-			<div class="row"> 
-				<div class="col-6">
-					<img th:src="'/bootPractice/attach/'+ ${info.thumbnail[0].save_name} + ${info.thumbnail[0].extension}" class="img-fluid"/>
-				</div>
-				<div class="col-6">
+<div layout:fragment="content" class="bg-light">
+	<div class="container w-50 text-center p-2 bg-white">
+		<div class="row"> 
+			<div class="col-md-6 p-2">
+				<img id="product-info-img" th:src="'/bootPractice/attach/'+ ${info.thumbnail[0].save_name} + ${info.thumbnail[0].extension}" class="img-fluid"/>
+			</div>
+			<div class="col-md-6">
+				<div>
 					<h4 class="p-2" th:text="${info.pname}"></h4>
 					<h5 class="p-2" th:text="${info.price}+원"></h5>
-					<span>남은 수량 : </span>
-					<span th:text="${info.stock}"></span>개
-				</div>
+					<span>남은 수량 : </span> <span th:text="${info.stock}"></span>개	
+				</div>	
+				<form id="order-form" class="p-2 mx-auto justify-content-center row">
+					<input type="hidden" name="name" value="${info.pname}"/>
+					<div class="product-count">
+						<button type="button" class="btn btn-outline-light" name="up" value="-"></button>
+							<input type="number" class="form-control" name="count" value="1"/>
+						<button type="button" class="btn btn-outline-light" name="down" value="+"></button>
+					</div>
+					<button type="button" name="cart-btn" class="btn btn-outline-dark btn-block w-50 mx-auto">장바구니</button>
+					<button type="button" name="order-btn" class="btn btn-outline-dark btn-block w-50 mx-auto">구매하기</button>
+				</form>
 			</div>
-			<div class="m-4"> 
-				<h5>상품 설명</h5>
-				<div class="border p-4" th:utext="${info.pinfo}"></div>
-			</div>
+			<!-- 모달 추가할 것 -->
+		</div>
+		<hr>
+		<div class="mt-4 mb-4"> 
+			<h5>상품 설명</h5>
+			<div class=" p-4" th:utext="${info.pinfo}"></div>
 		</div>
 	</div>
 	<script th:inline="javascript">
@@ -30,6 +40,66 @@
 			if(msg) {
 				alert(msg);
 			}
+		});
+	</script>
+	<script>
+		const orderForm = document.getElementById('order-form');
+		
+		document.querySelectorAll('.product-count').forEach(
+				function(item, i){
+					let cnt = item.querySelector('input');
+					item.children[0].addEventListener('click', function(){
+						if(cnt.value === 0 ){
+							alert('최소 수량은 1개 이상');
+						}else{
+							cnt.value -= 1;
+						}
+					});
+					
+					item.children[2].addEventListener('click', function(){
+						cnt.value += 1;
+					});
+				}
+		);
+		
+		orderForm.elements['cart-btn'].addEventListener("click", function(e){
+			var data = {
+					productId : orderForm.elements['name'].value,
+					count : orderForm.elements['count'].value
+			}
+			$.ajax({
+				data : JSON.stringify(data),
+				type : "POST",
+				url : "/cart",
+				contentType : "application/json",
+				beforeSend: function(xhr){
+			        xhr.setRequestHeader(header, token);
+			    },
+				success : function(data) {
+					e.preventDefault();
+					console.log(data);
+				}
+			});
+			e.preventDefault();
+		});
+		orderForm.elements['order-btn'].addEventListener("click", function(e){
+			var data = {
+					product : orderForm.elements['name'].value,
+					count : orderForm.elements['count'].value
+			}
+			$.ajax({
+				data : JSON.stringify(data),
+				type : "POST",
+				url : "/order",
+				contentType : "application/json",
+				beforeSend: function(xhr){
+			        xhr.setRequestHeader(header, token);
+			    },
+				success : function(data) {
+					e.preventDefault();
+				}
+			});
+			e.preventDefault();
 		});
 	</script>
 </div>
