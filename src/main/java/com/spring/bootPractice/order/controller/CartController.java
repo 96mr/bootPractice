@@ -60,21 +60,28 @@ public class CartController {
 		return "장바구니에 추가되었습니다.";
 	}
 	
+	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@PutMapping(value="/cart/api")
-	public CartResponseDto update(@RequestBody Map<String, Object> data, 
+	public int update(@RequestBody Map<String, Object> data, HttpSession session,
 						@AuthenticationPrincipal MemberDetail memberDetail) {
+		if((memberDetail == null)) {
+			List<CartResponseDto> list = (List<CartResponseDto>) session.getAttribute("cart");
+			list = cartService.update(list, data);
+			session.setAttribute("cart", list);
+			return 0;
+		}
 		CartResponseDto dto = cartService.update(data);
-		return dto;
+		return dto.getCount();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@DeleteMapping(value="/cart/api")
 	public void delete(@RequestBody Map<String, Object> data, HttpSession session) {
 		String productId = String.valueOf(data.get("productId"));
 		String num = String.valueOf(data.get("num"));
 		if(Integer.parseInt(num) == 0) {
-			@SuppressWarnings("unchecked")
 			List<CartResponseDto> list = (List<CartResponseDto>) session.getAttribute("cart");
 			cartService.delete(list, productId);
 		}else {

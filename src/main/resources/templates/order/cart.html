@@ -41,10 +41,10 @@
 			        xhr.setRequestHeader(header, token);
 			    },
 				success : function(data) {
-					console.log(data);
+					alert("상품이 장바구니에서 삭제되었습니다.");
+					productDiv.remove();
 				}	
 			}); 
-			productDiv.remove();
 		});
 		
  		$(document).on('click', 'button[name=count-down]',function(){
@@ -57,10 +57,10 @@
 				$countInput.val(cnt-1);
 				var data = {
 						num : $(this).parent().find('input[name=num]').val(),
+						productId : $(this).parent().find('input[name=product-num]').val(),
 						count : $countInput.val()	
 				}
-				if(data.num != 0)
-					updateCartCount(data);
+				updateCartCount(data);
 			}
 		});
 		$(document).on('click','button[name=count-up]',function(){
@@ -70,12 +70,25 @@
 			
 			var data = {
 					num : $(this).parent().find('input[name=num]').val(),
+					productId : $(this).parent().find('input[name=product-num]').val(),
 					count : $countInput.val()	
 			}
-			if(data.num != 0)
-				updateCartCount(data);
+			updateCartCount(data);
 		});
-		
+		$(document).on('change','input[name=count]',function(){
+			var $countInput = $(this).parent().find('input[name=count]');
+			var cnt = Number($countInput.val());
+			if(cnt <= 0 ){
+				alert('최소 수량은 1개 이상');
+				$countInput.val(1);
+			}
+			var data = {
+					num : $(this).parent().find('input[name=num]').val(),
+					productId : $(this).parent().find('input[name=product-num]').val(),
+					count : $(this).val()	
+			}
+			updateCartCount(data);
+		});
 		function updateCartCount(data){
 			$.ajax({
 				data : JSON.stringify(data),

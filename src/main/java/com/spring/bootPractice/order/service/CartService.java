@@ -108,6 +108,19 @@ public class CartService {
 		return new CartResponseDto(cart);
 	}
 	
+	public List<CartResponseDto> update(List<CartResponseDto>list, Map<String, Object> data) {
+		int id = Integer.parseInt(String.valueOf(data.get("productId")));
+		int count = Integer.parseInt(String.valueOf(data.get("count")));
+		for(Iterator<CartResponseDto> iterator = list.iterator(); iterator.hasNext();) {
+			CartResponseDto c = iterator.next();
+			if(c.getProductId().getPid() == id) {
+				c.setCount(count);
+				break;
+			}
+		}
+		return list;
+	}
+	
 	public void delete(String num) {
 		int id = Integer.parseInt(num);
 		cartRepository.deleteById(id);
