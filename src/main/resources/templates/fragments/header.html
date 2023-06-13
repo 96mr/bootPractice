@@ -22,7 +22,7 @@
                     	<a class="nav-link" th:href="@{/member/page}" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">마이페이지</a>
                     </li>
                     <li class="nav-item active" role="presentation">
-                    	<a class="nav-link" th:href="@{/member/page}" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">장바구니</a>
+                    	<a class="nav-link" th:href="@{/cart}">장바구니</a>
                     </li>
                     <li class="nav-item active" role="presentation">
                     	<a class="nav-link" th:href="@{/product}" sec:authorize="hasRole('ROLE_ADMIN')">제품등록</a>

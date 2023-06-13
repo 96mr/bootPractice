@@ -1,35 +1,52 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
-	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout}">
 <div layout:fragment="content" class="bg-light">
-	<div class="container w-50 text-center p-2 bg-white">
-		<div class="row"> 
+	<div class="container w-50 text-center p-4 bg-white">
+		<div class="row">
 			<div class="col-md-6 p-2">
-				<img id="product-info-img" th:src="'/bootPractice/attach/'+ ${info.thumbnail[0].save_name} + ${info.thumbnail[0].extension}" class="img-fluid"/>
+				<img id="product-info-img"
+					th:src="'/bootPractice/attach/'+ ${info.thumbnail[0].save_name} + ${info.thumbnail[0].extension}"
+					class="img-fluid p-4" />
 			</div>
 			<div class="col-md-6">
-				<div>
+				<div class="m-4">
 					<h4 class="p-2" th:text="${info.pname}"></h4>
 					<h5 class="p-2" th:text="${info.price}+원"></h5>
-					<span>남은 수량 : </span> <span th:text="${info.stock}"></span>개	
-				</div>	
+					<span>남은 수량 : </span> <span th:text="${info.stock}"></span>개
+				</div>
 				<form id="order-form" class="p-2 mx-auto justify-content-center row">
-					<input type="hidden" name="name" value="${info.pname}"/>
-					<div class="product-count">
-						<button type="button" class="btn btn-outline-light" name="up" value="-"></button>
-							<input type="number" class="form-control" name="count" value="1"/>
-						<button type="button" class="btn btn-outline-light" name="down" value="+"></button>
+					<input type="hidden" name="product" th:value="${info.pid}" />
+					<div class="product-count btn-group w-50 m-2">
+						<button type="button" class="btn btn-outline-secondary" name="count-down" value="-">-</button>
+						<input type="number" class="form-control w-50" name="count" value="1" pattern="[0-9]+"/>
+						<button type="button" class="btn btn-outline-secondary" name="count-up" value="+">+</button>
 					</div>
-					<button type="button" name="cart-btn" class="btn btn-outline-dark btn-block w-50 mx-auto">장바구니</button>
-					<button type="button" name="order-btn" class="btn btn-outline-dark btn-block w-50 mx-auto">구매하기</button>
+					<div class="btn-group w-75 m-2">
+					<button type="button" name="cart-btn" class="btn btn-outline-dark btn-block w-50 p-2">장바구니</button>
+					<button type="button" name="order-btn" class="btn btn-outline-dark btn-block w-50 p-2 mt-0">구매하기</button>
+					</div>
 				</form>
 			</div>
 			<!-- 모달 추가할 것 -->
+			<div id="modal" class="modal" tabindex="-1">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">장바구니에 추가되었습니다.</h5>
+						</div>
+						<div class="modal-body">
+							<button type="button" class="btn btn-light" name="move-btn" th:onclick="|location.href='@{/cart}'|">장바구니로 이동</button>
+							<button type="button" class="btn btn-light" data-dismiss="modal">더 둘러보기</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<hr>
-		<div class="mt-4 mb-4"> 
+		<div class="mt-4 mb-4">
 			<h5>상품 설명</h5>
 			<div class=" p-4" th:utext="${info.pinfo}"></div>
 		</div>
@@ -49,57 +66,46 @@
 				function(item, i){
 					let cnt = item.querySelector('input');
 					item.children[0].addEventListener('click', function(){
-						if(cnt.value === 0 ){
+						if(parseInt(cnt.value) <= 1 ){
 							alert('최소 수량은 1개 이상');
+							cnt.value = 1;
 						}else{
-							cnt.value -= 1;
+							--cnt.value;
 						}
 					});
 					
 					item.children[2].addEventListener('click', function(){
-						cnt.value += 1;
+						++cnt.value;
 					});
 				}
 		);
 		
 		orderForm.elements['cart-btn'].addEventListener("click", function(e){
 			var data = {
-					productId : orderForm.elements['name'].value,
-					count : orderForm.elements['count'].value
+					product : orderForm.elements['product'].value,
+					count : orderForm.elements['count'].value	
 			}
 			$.ajax({
 				data : JSON.stringify(data),
 				type : "POST",
-				url : "/cart",
+				url : "/cart/api",
 				contentType : "application/json",
 				beforeSend: function(xhr){
 			        xhr.setRequestHeader(header, token);
 			    },
 				success : function(data) {
 					e.preventDefault();
-					console.log(data);
+					$("#modal").modal('show');
 				}
 			});
 			e.preventDefault();
 		});
+		
 		orderForm.elements['order-btn'].addEventListener("click", function(e){
 			var data = {
-					product : orderForm.elements['name'].value,
+					product : orderForm.elements['product'].value,
 					count : orderForm.elements['count'].value
 			}
-			$.ajax({
-				data : JSON.stringify(data),
-				type : "POST",
-				url : "/order",
-				contentType : "application/json",
-				beforeSend: function(xhr){
-			        xhr.setRequestHeader(header, token);
-			    },
-				success : function(data) {
-					e.preventDefault();
-				}
-			});
-			e.preventDefault();
 		});
 	</script>
 </div>

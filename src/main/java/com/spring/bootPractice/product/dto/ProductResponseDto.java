@@ -33,8 +33,4 @@ public class ProductResponseDto {
 												.map(ImageResponseDto::new)
 												.collect(Collectors.toList());
 	}
-	
-	public void addThumbnail(ImageResponseDto thumbnail){
-		this.thumbnail.add(thumbnail);
-	}
 }

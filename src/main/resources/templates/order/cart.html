@@ -11,25 +11,8 @@
 	</th:block>
 <div layout:fragment="content">
 	<div class="container w-50 text-center p-2 bg-white">
-		<div class="row"> 
-			<div class="col-md-6 p-2">
-				<img id="product-info-img" th:src="'/bootPractice/attach/'+ ${info.thumbnail[0].save_name} + ${info.thumbnail[0].extension}" class="img-fluid"/>
-			</div>
-			<div class="col-md-6">
-				<form id="order-form" class="p-2 mx-auto justify-content-center row">
-					<input type="hidden" name="num" th:value="${num}"/>
-					<span th:text="${product}">제품명</span>
-					<div class="product-count">
-						<button type="button" class="btn btn-outline-light" name="up" value="-"></button>
-							<input type="number" class="form-control" name="count" value="1"/>
-						<button type="button" class="btn btn-outline-light" name="down" value="+"></button>
-					</div>
-					<button type="button" name="cart-btn" class="btn btn-outline-dark btn-block w-20 mx-auto">삭제</button>
-					<button type="button" name="order-btn" class="btn btn-outline-dark btn-block w-50 mx-auto">구매하기</button>
-				</form>
-			</div>
-			<!-- 모달 추가할 것 -->
-		</div>
+		<form id="cart-form" class="p-2 mx-auto justify-content-center row">
+		</form>
 		<hr>
 	</div>
 	<script th:inline="javascript">
@@ -41,72 +24,101 @@
 		});
 	</script>
 	<script>
-		$('#summernote').summernote({
-	        placeholder: '제품에 대한 설명을 작성해주세요',
-	        tabsize: 2,
-	        height: 500,
-	        lang: 'ko-KR',
-	        toolar:[
-	        	['style',['style']],
-	        	['font', ['bold', 'underline','clear']],
-	        	['color',['color']],
-	        	['table',['table']],
-	        	['insert',['link','picture','video']]
-	        ],
-	        callbacks : { 
-	        	//이미지 업로드
-	            onImageUpload : function(files, editor, welEditable) {
-	            	for (var i = files.length - 1; i >= 0; i--) {
-	            		uploadImageFile(files[i], this);
-	            		console.log(file[i]);
-	            	}
-	            },
-				onPaste : function(e){
-					var data = e.originalEvent.clipboardData;
-					if(data && data.items && data.items.length){
-						var item = data.items[0];
-						if(item.kind === 'file' && item.type.indexOf('image/') !== -1){
-							e.preventDefault();
-						}
-					}		
-				}
-	         }
-	      });
+		const cartForm = $('#cart-form');
 		
-		 function uploadImageFile(file, el) {
-				data = new FormData();
-				data.append("file", file);
-				$.ajax({
-					data : data,
-					type : "POST",
-					url : "/product/uploadImage",
-					contentType : false,
-					enctype : 'multipart/form-data',
-					processData : false,
-					success : function(data) {
-						$(el).summernote('editor.insertImage', data.url);
-						console.log(data);
-					}
-				});
+		$(document).on('click','button[name=cart-delete-btn]',function(){
+			var productDiv = $(this).parent();
+			var data = {
+					productId : $(this).prev().find('input[name=product-num]').val(),
+					num : $(this).prev().find('input[name=num]').val()
 			}
-		 
-		 let thumbnailFile = document.querySelector("#thumbnail"); 
-		 let img = document.querySelector("#previewImage img");
-		 
-		 thumbnailFile.addEventListener('change', () => {
-			 
-			 if(thumbnailFile.files.length > 0){ // 파일 여부를 확인
-				 let reader = new FileReader();
-				 
-			 	reader.onload = function(data){
-			 		console.log(data);
-			 		img.src = data.target.result;
-			 	}
-			 	reader.readAsDataURL(thumbnailFile.files[0]);
-			 }else{
-				 img.src = "";
-			 }
-		 });
+		 	$.ajax({
+				data : JSON.stringify(data),
+				type : "DELETE",
+				url : "cart/api",
+				contentType : "application/json",
+				beforeSend: function(xhr){
+			        xhr.setRequestHeader(header, token);
+			    },
+				success : function(data) {
+					console.log(data);
+				}	
+			}); 
+			productDiv.remove();
+		});
+		
+ 		$(document).on('click', 'button[name=count-down]',function(){
+			var $countInput = $(this).parent().find('input[name=count]');
+			var cnt = Number($countInput.val());
+			if(cnt <= 1 ){
+				alert('최소 수량은 1개 이상');
+				$countInput.val(1);
+			}else{
+				$countInput.val(cnt-1);
+				var data = {
+						num : $(this).parent().find('input[name=num]').val(),
+						count : $countInput.val()	
+				}
+				if(data.num != 0)
+					updateCartCount(data);
+			}
+		});
+		$(document).on('click','button[name=count-up]',function(){
+			var $countInput = $(this).parent().find('input[name=count]');
+			var cnt = Number($countInput.val());
+			$countInput.val(cnt+1);
+			
+			var data = {
+					num : $(this).parent().find('input[name=num]').val(),
+					count : $countInput.val()	
+			}
+			if(data.num != 0)
+				updateCartCount(data);
+		});
+		
+		function updateCartCount(data){
+			$.ajax({
+				data : JSON.stringify(data),
+				url:"/cart/api",
+				type : "PUT",
+				contentType : "application/json",
+				beforeSend: function(xhr){
+			        xhr.setRequestHeader(header, token);
+			    },
+				success : function(data) {
+					
+				}			
+			});
+		}
+		
+		$(document).ready(function(){
+			$.ajax({
+				url:"/cart/api",
+				type : "GET",
+				contentType : "application/json",
+				beforeSend: function(xhr){
+			        xhr.setRequestHeader(header, token);
+			    },
+				success : function(data) {
+					var out = "";
+					$.each(JSON.parse(data), function(idx, item){
+						out += "<div class='row p-4 w-100'>";
+						out	+= "<span class='product-thumbnail col-3'>";
+						out	+= "<img src='/bootPractice/attach/"+item.thumbnail+"' class='img-thumbnail order-form-img p-2'/></span>";
+						out	+= "<div class='product-name col-4'>"+item.productName+"</div>";
+						out	+= "<div class='product-count col-3 btn-group h-50'>";
+						out += "<input type='hidden' name='num' value='" + item.num + "'/>";
+						out += "<input type='hidden' name='product-num' value='" + item.productId + "'/>";
+						out += "<button type='button' class='btn btn-outline-light text-dark btn-inline' name='count-down' value='-'>-</button>";
+						out += "<input type='number' class='form-control w-50' name='count' pattern='[0-9]+' value='"+item.count+"'/>";
+						out += "<button type='button' class='btn btn-outline-light text-dark btn-inline' name='count-up' value='+'>+</button></div>";
+						out += "<button type='button' name='cart-delete-btn' class='btn btn-outline-dark btn-inline mx-auto'>삭제</button></div>";
+					});
+					out += "<button type='button' name='order-btn' class='row btn btn-outline-dark btn-block w-50 mx-auto'>구매하기</button>"; 
+					cartForm.html(out);
+				}			
+			});
+		});
 	</script>
 </div>
 </html>

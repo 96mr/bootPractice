@@ -62,14 +62,14 @@ public class ProductController {
 		model.addAttribute("productList", list)
 			 .addAttribute("categoryList", categoryService.getAllList())
 			 .addAttribute("curCategory", category);	
-		return "/product/list";
+		return "product/list";
 	}
 	
 	@GetMapping(value="/product/{id}")
 	public String productInfo(@PathVariable("id") int id, Model model) {
 		ProductResponseDto product = productService.getProductInfo(id);
 		model.addAttribute("info", product);
-		return "/product/info";
+		return "product/info";
 	}
 	
 	@Secured("ROLE_ADMIN")
@@ -94,7 +94,7 @@ public class ProductController {
 			return "redirect:/index";
 		}else {
 			model.addAttribute("msg", "다시 시도해주세요.");
-			return "/product/create";
+			return "product/create";
 		}
 	}
 	

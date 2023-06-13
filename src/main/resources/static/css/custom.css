@@ -4,15 +4,18 @@
 	.main-slider{height:80vh}
 	.product-list img{height:200px}
 	#product-info-img{height:400px;}
+	.order-form-img{width:100px; height:100px;}
 }
 @media screen and (max-width: 1000px){
 	.main-slider{height:40vh}
 	.product-list img{height:100px}
 	#product-info-img{height:300px;}
+	.order-form-img{width:100px; height:100px;}
 }
 @media screen and (max-width: 768px){
 	.main-slider{height:30vh}
 	.product-list img{height:100px}
 	#product-info-img{height:200px;}
+	.order-form-img{width:100px; height:100px;}
 }
 li.dropdown:hover > ul.dropdown-menu {display:block; margin:0;}

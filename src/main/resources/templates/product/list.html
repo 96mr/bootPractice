@@ -46,14 +46,14 @@
       				</a>
       			</li>
 			    <li class="page-item" th:each="p: ${#numbers.sequence(startPage, endPage)}" th:class="${p == productList.number+1} ? 'active'">
-			    	<p th:text="${p}"></p>
+			<!--     	<p th:text="${p}"></p>
 			    	<p th:text="${startPage}"></p>
 			    	<p th:text="${endPage}"></p>
 			    	<p th:text="${productList.number}"></p>
 			    	<p th:text="${pageNumber}"></p>
 			    	<p th:text="${productList.first}"></p>
 			    	<p th:text="${productList.last}"></p>
-			    	<p th:text="${totalPages}"></p>
+			    	<p th:text="${totalPages}"></p> -->
 			    	<a class="page-link" th:text="${p}" th:href="@{/products/{category}/{subCategory}(category=${curCategory}, subCategory=${curSubCategory}, page=${p})}"></a>
 			    </li>
 			    <li class="page-item" th:class="${productList.last} ? 'd-none'">

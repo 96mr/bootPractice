@@ -45,12 +45,11 @@ public class ProductService {
 	@Transactional
 	public String save(ProductRequestDto productDto, List<MultipartFile> files) {
 		Product product = productRepository.save(productDto.toEntity());
-		List<ImageRequestDto> list = fileUpload.parseFileInfo(files);
+		List<ImageRequestDto> list = fileUpload.parseFileInfo(files, ImageCategory.PRODUCT);
 		Iterator<ImageRequestDto> iterator = list.iterator();
 		while(iterator.hasNext()) {
 			ImageRequestDto image = iterator.next();
 			image.setPid(product);
-			image.setCategory(ImageCategory.PRODUCT);
 			imageRepository.save(image.toEntity());
 		}
 		return productDto.getPcategory().getName();

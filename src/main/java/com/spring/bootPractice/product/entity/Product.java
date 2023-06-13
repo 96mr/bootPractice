@@ -49,7 +49,7 @@ public class Product {
 	@Temporal(TemporalType.DATE)
 	private Date regdate;
 	private int hit;	
-	@OneToMany(mappedBy="pid")
+	@OneToMany(mappedBy="pid", fetch = FetchType.EAGER)
 	private List<Image> thumbnail = new ArrayList<>();
 	
 	@Builder
