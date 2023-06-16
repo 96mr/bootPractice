@@ -1,7 +1,7 @@
 ## 쇼핑몰
 > Spring boot 기반으로 진행한 개인 프로젝트입니다.
 
-## [블로그](https://cookie9606.tistory.com/115)
+### [블로그](https://cookie9606.tistory.com/115)
 
 ## 제작 기간
 2023년 4월 10일 ~ (진행중)
