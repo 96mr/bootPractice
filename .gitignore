@@ -7,6 +7,7 @@ target/
 # ignore properties file
 *.properties
 *.yml
+*.log
 
 ### STS ###
 .apt_generated
