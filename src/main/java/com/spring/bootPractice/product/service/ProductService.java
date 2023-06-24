@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.JsonObject;
 import com.spring.bootPractice.global.common.FileUpload;
+import com.spring.bootPractice.global.exception.CustomException;
+import com.spring.bootPractice.global.exception.ErrorCode;
 import com.spring.bootPractice.product.dto.ImageRequestDto;
 import com.spring.bootPractice.product.dto.ProductRequestDto;
 import com.spring.bootPractice.product.dto.ProductResponseDto;
@@ -45,11 +47,10 @@ public class ProductService {
 	@Transactional
 	public String save(ProductRequestDto productDto, List<MultipartFile> files) {
 		Product product = productRepository.save(productDto.toEntity());
-		List<ImageRequestDto> list = fileUpload.parseFileInfo(files, ImageCategory.PRODUCT);
+		List<ImageRequestDto> list = fileUpload.parseFileInfo(files, ImageCategory.PRODUCT, product.getPid());
 		Iterator<ImageRequestDto> iterator = list.iterator();
 		while(iterator.hasNext()) {
 			ImageRequestDto image = iterator.next();
-			image.setPid(product);
 			imageRepository.save(image.toEntity());
 		}
 		return productDto.getPcategory().getName();
@@ -75,7 +76,7 @@ public class ProductService {
 	
 	public ProductResponseDto getProductInfo(int pid) {
 		Product product= productRepository.findByPid(pid)
-							.orElseThrow(()-> new IllegalStateException("존재하지 않는 상품입니다."));
+							.orElseThrow(()-> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 		return new ProductResponseDto(product);
 	}
 	

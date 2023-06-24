@@ -2,7 +2,6 @@ package com.spring.bootPractice.product.dto;
 
 import com.spring.bootPractice.product.entity.Image;
 import com.spring.bootPractice.product.entity.ImageCategory;
-import com.spring.bootPractice.product.entity.Product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,10 +18,10 @@ public class ImageRequestDto {
 	private String path;
 	private String extension;
 	private ImageCategory category;
-	private Product pid;
+	private int pid;
 	
 	@Builder
-	public ImageRequestDto(String org_name, String save_name, String path, String extension, ImageCategory category, Product pid) {
+	public ImageRequestDto(String org_name, String save_name, String path, String extension, ImageCategory category, int pid) {
 		this.org_name = org_name;
 		this.save_name = save_name;
 		this.path = path;

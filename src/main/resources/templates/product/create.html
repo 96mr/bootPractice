@@ -34,7 +34,7 @@
 				<p class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
 				</div>
 				<div>
-				<input type="number" name="stock" th:field="*{stock}" class="form-control p-4 mb-4" autocomplete="off" placeholder="제품 가격을 입력하세요.">
+				<input type="number" name="stock" th:field="*{stock}" class="form-control p-4 mb-4" autocomplete="off" placeholder="제품 수량을 입력하세요.">
 				<p class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></p>
 				</div>
 			</div>

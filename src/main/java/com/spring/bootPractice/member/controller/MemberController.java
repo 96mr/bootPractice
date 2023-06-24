@@ -18,13 +18,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.spring.bootPractice.member.dto.AddressResponseDto;
 import com.spring.bootPractice.member.dto.MailResponseDto;
 import com.spring.bootPractice.member.dto.MemberRequestDto;
 import com.spring.bootPractice.member.dto.MemberResponseDto;
 import com.spring.bootPractice.member.entity.Member;
 import com.spring.bootPractice.member.entity.MemberDetail;
-import com.spring.bootPractice.member.service.AddressService;
 import com.spring.bootPractice.member.service.MailService;
 import com.spring.bootPractice.member.service.MemberService;
 
@@ -35,7 +33,6 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 	
 	private final MemberService memberService;
-	private final AddressService addressService;
 	private final MailService mailService;
 
 	@RequestMapping(value="/login", method = {RequestMethod.GET, RequestMethod.POST})
@@ -70,7 +67,6 @@ public class MemberController {
 			MailResponseDto mailResponseDto = mailService.createAuthKeyMail(member);
 			session.setAttribute("authMail", mailResponseDto);
 		}catch(IllegalStateException e) {
-			model.addAttribute("errorMsg", e.getMessage());
 			return "register";
 		}
 		rttr.addFlashAttribute("msg", "해당 이메일로 인증번호가 전송되었습니다.");
@@ -105,13 +101,16 @@ public class MemberController {
 	public String memberDetail(@AuthenticationPrincipal MemberDetail memberDetail, Model model) {
 		if(memberDetail != null) {
 			Member member = memberDetail.getMember();
-			//AddressResponseDto address = addressService.getAddressById(member);
 			model.addAttribute("member", new MemberResponseDto(member));
-			//model.addAttribute("address", address);
 		}else {
 			model.addAttribute("member", "존재하지 않습니다.");
 		}
 		return "member/info";
+	}
+	
+	@GetMapping(value="member/address")
+	public String memberAddress() {
+		return "member/address";
 	}
 	
 	@GetMapping(value="/denied")

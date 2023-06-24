@@ -5,20 +5,18 @@
 	layout:decorate="~{layout}">
 <div layout:fragment="content" class="bg-light">
 	<div class="container w-50 text-center p-4 bg-white">
-		<div class="row">
+		<div class="row product-info">
 			<div class="col-md-6 p-2">
-				<img id="product-info-img"
-					th:src="'/bootPractice/attach/'+ ${info.thumbnail[0].save_name} + ${info.thumbnail[0].extension}"
-					class="img-fluid p-4" />
+				<img class="img-fluid p-4 product-info-img" />
 			</div>
 			<div class="col-md-6">
 				<div class="m-4">
-					<h4 class="p-2" th:text="${info.pname}"></h4>
-					<h5 class="p-2" th:text="${info.price}+원"></h5>
-					<span>남은 수량 : </span> <span th:text="${info.stock}"></span>개
+					<h4 class="p-2 product-info-name"></h4>
+					<h5 class="p-2 product-info-price"></h5>
+					<span>남은 수량 : </span> <span class="product-info-stock"></span>
 				</div>
-				<form id="order-form" class="p-2 mx-auto justify-content-center row">
-					<input type="hidden" name="product" th:value="${info.pid}" />
+				<form id="product-order-form" class="p-2 mx-auto justify-content-center row">
+					<input type="hidden" name="product-num" />
 					<div class="product-count btn-group w-50 m-2">
 						<button type="button" class="btn btn-outline-secondary" name="count-down" value="-">-</button>
 						<input type="number" class="form-control w-50" name="count" value="1" pattern="[0-9]+"/>
@@ -30,7 +28,7 @@
 					</div>
 				</form>
 			</div>
-			<!-- 모달 추가할 것 -->
+
 			<div id="modal" class="modal" tabindex="-1">
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
@@ -48,19 +46,51 @@
 		<hr>
 		<div class="mt-4 mb-4">
 			<h5>상품 설명</h5>
-			<div class=" p-4" th:utext="${info.pinfo}"></div>
+			<div class="p-4 product-info-feature"></div>
+		</div>
+		<div>
+			<a th:href="@{/product}" sec:authorize="hasRole('ROLE_ADMIN')">제품 정보 수정</a>
 		</div>
 	</div>
-	<script th:inline="javascript">
+	<script th:inline="javascript">		
 		$(document).ready(function(){
 			var msg = [[${msg}]];
 			if(msg) {
 				alert(msg);
 			}
+			
+		var productNum = [[${productNum}]];
+			$.ajax({
+				type : "GET",
+				url : "/api/product/"+productNum,
+				contentType : "application/json",
+				beforeSend: function(xhr){
+			        xhr.setRequestHeader(header, token);
+			    },
+				success : function(data, status) {
+					console.log(status);
+					if(status == 'success'){
+						console.log(data);
+						$('.product-info-name').text(data.pname);
+						$('.product-info-stock').text(data.stock+'개');
+						$('.product-info-price').text(data.price+'원');
+						$('.product-info-feature').html(data.pinfo);
+						$('.product-info-img').attr('src','/bootPractice/attach/'+data.thumbnail[0].save_name + data.thumbnail[0].extension);
+						$('input[name=product-num]').val(data.pid);
+					}
+				},
+				error : function (xhr){
+					if(xhr.status == 404){
+						$('.product-info').text("존재하지 않는 상품입니다");
+						$('.product-info-feature').html("존재하지 않는 상품 페이지입니다.");
+					}
+						
+				}
+			});
 		});
 	</script>
 	<script>
-		const orderForm = document.getElementById('order-form');
+		const productOrderForm = $('#product-order-form');
 		
 		document.querySelectorAll('.product-count').forEach(
 				function(item, i){
@@ -80,31 +110,36 @@
 				}
 		);
 		
-		orderForm.elements['cart-btn'].addEventListener("click", function(e){
+		productOrderForm.find('button[name=cart-btn]').on("click", function(e){
 			var data = {
-					product : orderForm.elements['product'].value,
-					count : orderForm.elements['count'].value	
-			}
+					product : productOrderForm.find('input[name=product-num]').val(),
+					count : productOrderForm.find('input[name=count]').val()
+			}	
+			console.log(data);
 			$.ajax({
 				data : JSON.stringify(data),
 				type : "POST",
-				url : "/cart/api",
+				url : "/api/cart/",
 				contentType : "application/json",
 				beforeSend: function(xhr){
 			        xhr.setRequestHeader(header, token);
 			    },
-				success : function(data) {
+				success : function(data, status) {
 					e.preventDefault();
-					$("#modal").modal('show');
+					if(status == 'success'){
+						$("#modal").modal('show');
+					}else{
+						alert("다시 시도해주세요.");
+					}
 				}
 			});
 			e.preventDefault();
 		});
 		
-		orderForm.elements['order-btn'].addEventListener("click", function(e){
+		productOrderForm.find('button[name=order-btn]').on("click", function(e){
 			var data = {
-					product : orderForm.elements['product'].value,
-					count : orderForm.elements['count'].value
+					product : productOrderForm.find('input[name=product-num]').val(),
+					count : productOrderForm.find('input[name=count]').val()	
 			}
 		});
 	</script>

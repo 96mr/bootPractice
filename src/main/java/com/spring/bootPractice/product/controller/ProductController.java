@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,10 +31,12 @@ import com.spring.bootPractice.product.dto.ProductResponseDto;
 import com.spring.bootPractice.product.service.CategoryService;
 import com.spring.bootPractice.product.service.ProductService;
 
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class ProductController {
 	
 	private final ProductService productService;
@@ -43,33 +47,37 @@ public class ProductController {
 						Model model) {
 		Page<ProductResponseDto> list = productService.productList("main", pageable);
 		model.addAttribute("productList", list);
-		model.addAttribute("categoryList", categoryService.getAllList());
 		return "index";
-	}
+	}	
 	
 	@GetMapping(value= {"/products/{category}","/products/{category}/{subCategory}"})
 	public String categoryList(@PathVariable("category") String category, 
 					   @PathVariable(value="subCategory",required=false) Optional<String> subCategory, 
-					   @PageableDefault(page = 0, size = 8, sort ="regdate", direction = Sort.Direction.DESC) Pageable pageable,
+					   @PageableDefault(page = 0, size = 4, sort ="regdate", direction = Sort.Direction.DESC) Pageable pageable,
 					   Model model) {
-		Page<ProductResponseDto> list;
+		String argCategory = category;
 		if(subCategory.isPresent()) {
-			list = productService.productList(subCategory.get(), pageable);
-			model.addAttribute("curSubCategory", subCategory.get());
-		}else {
-			list = productService.productList(category, pageable);
-		}
+			argCategory = subCategory.get();
+			model.addAttribute("curSubCategory", argCategory);			
+		}	
+		Page<ProductResponseDto> list = productService.productList(argCategory, pageable);
 		model.addAttribute("productList", list)
 			 .addAttribute("categoryList", categoryService.getAllList())
 			 .addAttribute("curCategory", category);	
 		return "product/list";
 	}
-	
+
 	@GetMapping(value="/product/{id}")
 	public String productInfo(@PathVariable("id") int id, Model model) {
-		ProductResponseDto product = productService.getProductInfo(id);
-		model.addAttribute("info", product);
+		model.addAttribute("productNum", id);
 		return "product/info";
+	}
+	
+	@ResponseBody
+	@GetMapping(value="/api/product/{id}")
+	public ResponseEntity<ProductResponseDto> productInfo(@PathVariable("id") int id) {
+		ProductResponseDto product = productService.getProductInfo(id);
+		return new ResponseEntity<>(product, HttpStatus.OK);
 	}
 	
 	@Secured("ROLE_ADMIN")

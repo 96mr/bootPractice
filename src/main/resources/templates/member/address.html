@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout2}">
+<div layout:fragment="content">
+	<div class="p-2">
+	<h3 class="text-center p-4" th:text="'배송지'"></h3>
+		<div class="row justify-content-center mb-2">
+			<div class="col-10 p-4 border mt-2 mb-2">
+				<h6 id="postcode"></h6>
+				<h6 id="address"></h6>
+				<h6 id="detail-address"></h6>
+				<button type="button" id="add-address-form" class="btn btn-light text-dark col-3 p-2"></button>
+			</div>
+		</div>
+		<form name="address-form" class="mx-auto justify-content-center d-none">
+			<div class="row">
+				<input type="text" name="postcode" class="form-control col-4 m-2" placeholder="우편번호"/>
+				<input type="button" id="daum-address" class="btn btn-outline-dark col-3 m-2" value="우편번호 찾기"/><br>
+			</div>
+			<div class="row">
+				<input type="text" name="address" class="form-control col-8 m-2" placeholder="주소"/><br>
+			</div>
+			<div class="row">
+				<input type="text" name="detail-address" class="form-control col-8 m-2" placeholder="상세주소"/>
+			</div>
+			<button type="button" name="submit-address" class="btn btn-dark col-3 p-2"></button>
+		</form>
+	</div>
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script type="text/javascript" th:src="@{/js/address.js}"></script>
+</div>
+</html>

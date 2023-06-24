@@ -1,7 +1,7 @@
 package com.spring.bootPractice.member.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,38 +23,41 @@ public class AddressController {
 
 	private final AddressService addressService;
 	
-	@GetMapping(value="/address")
-	public JsonObject getAddress(@AuthenticationPrincipal MemberDetail memberDetail, Model model) {
+	@GetMapping(value="/api/address")
+	public ResponseEntity<JsonObject> getAddress(@AuthenticationPrincipal MemberDetail memberDetail) {
 		JsonObject json = new JsonObject();
 		Member member = memberDetail.getMember();
 		AddressResponseDto result = addressService.getAddressById(member);
 		json.addProperty("postcode", result.getAddress1());
 		json.addProperty("address", result.getAddress2());
 		json.addProperty("detail_address", result.getAddress3());
-		return json;
+		return ResponseEntity.ok()
+							.body(json);
 	}
 	
-	@PostMapping(value="/address")
-	public JsonObject insertAddress(@RequestBody AddressRequestDto addressDto,
-									@AuthenticationPrincipal MemberDetail memberDetail, Model model) {
+	@PostMapping(value="/api/address")
+	public ResponseEntity<JsonObject> insertAddress(@RequestBody AddressRequestDto addressDto,
+									@AuthenticationPrincipal MemberDetail memberDetail) {
 		JsonObject json = new JsonObject();
 		Member member = memberDetail.getMember();
 		AddressResponseDto result = addressService.save(addressDto, member);
 		json.addProperty("postcode", result.getAddress1());
 		json.addProperty("address", result.getAddress2());
 		json.addProperty("detail_address", result.getAddress3());
-		return json;
+		return ResponseEntity.ok()
+							.body(json);
 	}
 	
-	@PutMapping(value="/address")
-	public JsonObject updateAddress(@RequestBody AddressRequestDto addressDto,
-									@AuthenticationPrincipal MemberDetail memberDetail, Model model) {
+	@PutMapping(value="/api/address")
+	public ResponseEntity<JsonObject> updateAddress(@RequestBody AddressRequestDto addressDto,
+									@AuthenticationPrincipal MemberDetail memberDetail) {
 		JsonObject json = new JsonObject();
 		Member member = memberDetail.getMember();
 		AddressResponseDto result = addressService.update(addressDto, member);
 		json.addProperty("postcode", result.getAddress1());
 		json.addProperty("address", result.getAddress2());
 		json.addProperty("detail_address", result.getAddress3());
-		return json;
+		return ResponseEntity.ok()
+							.body(json);
 	}
 }

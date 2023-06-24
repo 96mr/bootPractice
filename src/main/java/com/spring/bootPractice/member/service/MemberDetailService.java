@@ -20,7 +20,6 @@ public class MemberDetailService implements UserDetailsService{
 
 	@Override
 	public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-		System.out.println("DetailService");
 		Member member = memberRepository.findById(id)
 							.orElseThrow(()-> new UsernameNotFoundException(id));
 		return new MemberDetail(member);

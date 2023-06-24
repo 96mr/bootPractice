@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.spring.bootPractice.global.exception.CustomException;
+import com.spring.bootPractice.global.exception.ErrorCode;
 import com.spring.bootPractice.member.entity.Member;
 import com.spring.bootPractice.order.dto.CartRequestDto;
 import com.spring.bootPractice.order.dto.CartResponseDto;
@@ -50,13 +52,12 @@ public class CartService {
 		return array;
 	}
 	
-	
 	@Transactional
 	public CartResponseDto save(Map<String, Object> data, Member member) {
 		int pid = Integer.parseInt(String.valueOf(data.get("product")));
 		int count = Integer.parseInt(String.valueOf(data.get("count")));
 		Product product = productRepository.findByPid(pid)
-							.orElseThrow(()->new IllegalStateException("존재하지 않는 상품입니다."));
+							.orElseThrow(()->new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 		CartRequestDto dto = CartRequestDto.builder()
 										.productId(product)
 										.memberId(member)
@@ -71,7 +72,7 @@ public class CartService {
 		int pid = Integer.parseInt(String.valueOf(data.get("product")));
 		int count = Integer.parseInt(String.valueOf(data.get("count")));
 		Product product = productRepository.findByPid(pid)
-							.orElseThrow(()->new IllegalStateException("존재하지 않는 상품입니다."));
+							.orElseThrow(()->new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 		CartRequestDto requestDto = CartRequestDto.builder()
 										.productId(product)
 										.count(count)
@@ -103,7 +104,7 @@ public class CartService {
 		int num = Integer.parseInt(String.valueOf(data.get("num")));
 		int count = Integer.parseInt(String.valueOf(data.get("count")));
 		Cart cart = cartRepository.findById(num)
-							.orElseThrow(()-> new IllegalStateException("장바구니에 존재하지 않습니다."));
+							.orElseThrow(()-> new CustomException(ErrorCode.CART_NOT_FOUND));
 		cart.update(count);
 		return new CartResponseDto(cart);
 	}
@@ -121,9 +122,12 @@ public class CartService {
 		return list;
 	}
 	
+	@Transactional
 	public void delete(String num) {
 		int id = Integer.parseInt(num);
-		cartRepository.deleteById(id);
+		Cart cart = cartRepository.findById(id)
+				.orElseThrow(()-> new CustomException(ErrorCode.CART_NOT_FOUND));
+		cartRepository.deleteById(cart.getId());
 	}
 	
 	public List<CartResponseDto> delete(List<CartResponseDto> list, String productId) {

@@ -1,15 +1,11 @@
 package com.spring.bootPractice.product.entity;
 
-import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -33,12 +29,10 @@ public class Image {
 	private String extension;
 	@Enumerated(EnumType.STRING)
 	private ImageCategory category;
-	@ManyToOne
-	@JoinColumn(name="pid", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	private Product pid;
+	private int pid;
 	
 	@Builder
-	public Image(String org_name, String save_name, String path, String extension, ImageCategory category, Product pid) {
+	public Image(String org_name, String save_name, String path, String extension, ImageCategory category, int pid) {
 		this.org_name = org_name;
 		this.save_name = save_name;
 		this.path = path;

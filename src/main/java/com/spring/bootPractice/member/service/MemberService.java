@@ -8,8 +8,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.spring.bootPractice.global.exception.CustomException;
+import com.spring.bootPractice.global.exception.ErrorCode;
 import com.spring.bootPractice.member.dto.MailResponseDto;
-import com.spring.bootPractice.member.dto.MemberDto;
+import com.spring.bootPractice.member.dto.MemberRequestDto;
 import com.spring.bootPractice.member.entity.Member;
 import com.spring.bootPractice.member.entity.Role;
 import com.spring.bootPractice.member.repository.MemberRepository;
@@ -25,26 +27,22 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	
 	@Transactional
-	public Member save(MemberDto memberDto) {
-		duplicateId(memberDto.getId());
-		duplicateEmail(memberDto.getEmail());
-	
-		Member member = memberDto.toEntity(passwordEncoder);
+	public Member save(MemberRequestDto memberRequestDto) {
+		duplicateId(memberRequestDto.getId());
+		duplicateEmail(memberRequestDto.getEmail());
+		memberRequestDto.setPassword(passwordEncoder.encode(memberRequestDto.getPassword()));
+		Member member = memberRequestDto.toEntity();
 		return memberRepository.save(member);
 	}
 	
 	public void duplicateId(String id) {
 		memberRepository.findById(id)
-						.ifPresent(m-> {
-							throw new IllegalStateException("이미 가입된 회원입니다.");
-						});
+						.ifPresent(m-> {throw new CustomException(ErrorCode.DUPLICATED_USER_ID);});
 	}
 	
 	public void duplicateEmail(String email) {
 		memberRepository.findByEmail(email)
-						.ifPresent(m-> {
-							throw new IllegalStateException("이미 가입된 이메일입니다.");
-						});
+						.ifPresent(m-> {throw new CustomException(ErrorCode.DUPLICATED_USER_EMAIL);});
 	}
 	
 	@Transactional
@@ -53,7 +51,7 @@ public class MemberService {
 		if(authKey.equals(formData)) {
 			String id = dto.getId();
 			Member member = memberRepository.findById(id)
-											.orElseThrow(()-> new IllegalStateException("존재하지 않는 아이디"));
+											.orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 			member.update(Role.ROLE_USER);
 			memberRepository.save(member);
 			return true;

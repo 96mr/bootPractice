@@ -27,6 +27,6 @@ public class ImageResponseDto {
 		this.path = image.getPath();
 		this.extension = image.getExtension();
 		this.category = image.getCategory();
-		this.pid = image.getPid().getPid();
+		this.pid = image.getPid();
 	}
 }

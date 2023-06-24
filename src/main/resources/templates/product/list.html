@@ -3,21 +3,6 @@
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <div layout:fragment="content">
 	<div class="w-100 text-center">
-			<nav class="navbar navbar-expand navbar-light border-top border-bottom">
-				<ul class="navbar-nav text-center">
-					<li th:each = "category : ${categoryList}" class="nav-item dropdown active ml-4 mr-4">
-						<a class="nav-link h5" th:text="${category.name}" 
-							th:href="@{/products/{category}(category=${category.name})}"></a>
-						<ul class="list-unstyled text-center dropdown-menu">
-							<li class="nav-item active " th:each = "subCategory : ${category.children}">
-								<a class="nav-link dropdown-item" th:text="${subCategory.name}" 
-									th:href="@{/products/{category}/{subCategory} (category=${category.name}, subCategory=${subCategory.name})}"></a>
-							</li>
-						</ul>
-						
-					</li>
-				</ul>
-			</nav>
 			<div class="container">
 				<div class="row m-2">
 					<div class="col-3 p-2" th:each = "list : ${productList}"> 

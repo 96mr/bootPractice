@@ -24,7 +24,6 @@ public class MemberAuthenticationProvider implements AuthenticationProvider {
 	
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		System.out.println("provider");
 		String username = (String) authentication.getPrincipal();
 		String password = (String) authentication.getCredentials();
 		MemberDetail member = (MemberDetail) userDetailsService.loadUserByUsername(username);

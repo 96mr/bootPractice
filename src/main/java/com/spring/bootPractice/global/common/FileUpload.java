@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.bootPractice.product.dto.ImageRequestDto;
+import com.spring.bootPractice.product.entity.ImageCategory;
 
 @Component
 public class FileUpload {
@@ -19,7 +20,7 @@ public class FileUpload {
 	@Value("${file.dir}")
 	private String path;
 	
-	public List<ImageRequestDto> parseFileInfo(List<MultipartFile> files) {
+	public List<ImageRequestDto> parseFileInfo(List<MultipartFile> files, ImageCategory category, int pid) {
 		
 		List<ImageRequestDto> dto = new ArrayList<>();
 		
@@ -43,6 +44,8 @@ public class FileUpload {
 						.org_name(org_name)
 						.save_name(save_name)
 						.extension(extension)
+						.category(category)
+						.pid(pid)
 						.path(path)
 						.build()
 				);

@@ -1,15 +1,12 @@
 package com.spring.bootPractice.product.dto;
 
 import com.spring.bootPractice.product.entity.Image;
-import com.spring.bootPractice.product.entity.Product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 public class FileRequestDto {
 	private int id;
@@ -17,10 +14,10 @@ public class FileRequestDto {
 	private String save_name;
 	private String path;
 	private String extension;
-	private Product pid;
+	private int pid;
 	
 	@Builder
-	public FileRequestDto(String org_name, String save_name, String path, String extension, Product pid) {
+	public FileRequestDto(String org_name, String save_name, String path, String extension, int pid) {
 		this.org_name = org_name;
 		this.save_name = save_name;
 		this.path = path;

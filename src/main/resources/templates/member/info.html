@@ -1,42 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
-<div layout:fragment="content" class="bg-light">
-	<div class="container w-80 p-2 bg-white">
-		<h3 class="text-center p-4" th:text="'회원 페이지'"></h3>
-		<div class="row">
-			<div class="col-md-5 m-2">
-				<span class="text-center h5" th:text="${member.name}"></span>님 		
+      layout:decorate="~{layout2}">
+<div layout:fragment="content">
+	<h3 class="text-center p-4" th:text="'회원 페이지'"></h3>
+	<div class="row">
+		<div class="col-md-12">
+			<span class="text-center h5" th:text="${member.name}"></span>님
+		</div>
+		<div class="col-md-12 p-4">
+			<div>
+				<span class="text-center h5 p-4">주문/배송 조회</span>
+				<a th:href="@{/order}">주문 상세</a>
 			</div>
-			<div class="col-md-5 m-2">
-				<h5>주소</h5>
-				<div class="col-12 p-2 border mt-2 mb-2">
-					<h6 id="postcode"></h6>
-					<h6 id="address"></h6>
-					<h6 id="detail-address"></h6>
+			<div class="m-2 p-2 font-weight-bold">
+				<span class="m-2">상품 준비중</span> > 
+				<span class="m-2">출고 완료</span> > 
+				<span class="m-2">배송중</span> > 
+				<span class="m-2">배송완료</span>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="row text-center justify-content-center">
+				<div class="col-md-3 m-2 p-4 border rounded">
+					<i class="fas fa-truck fa-3x d-block p-4"></i>
+					<a th:href="@{/member/address}">배송지</a>
 				</div>
-				<button type="button" id="add-address-form" class="btn btn-light col-3 p-2"></button>
-				<form name="address-form" class="mx-auto justify-content-center d-none">
-					<div class="row">
-						<input type="text" name="postcode" class="form-control col-4 m-2" placeholder="우편번호"/>
-						<input type="button" id="daum-address" class="btn btn-outline-dark col-3 m-2" value="우편번호 찾기"/><br>
-					</div>
-					<div class="row">
-						<input type="text" name="address" class="form-control col-8 m-2" placeholder="주소"/><br>
-					</div>
-					<div class="row">
-						<input type="text" name="detail-address" class="form-control col-8 m-2" placeholder="상세주소"/>
-					</div>
-					<button type="button" name="submit-address" class="btn btn-dark col-3 p-2"></button>
-				</form>
-			</div>
-			<div class="col-md-5 m-2">
-				<a th:href="@{/order}">주문 내역 조회</a>
+				<div class="col-md-3 m-2 p-4 border rounded">
+					<i class="fas fa-pen fa-3x d-block p-4"></i>
+					<a th:href="@{/member/review}">리뷰</a>
+				</div>
+				<div class="col-md-3 m-2 p-4 border rounded">
+					<i class="fas fa-truck fa-3x d-block p-4"></i>
+					<a>없음</a>
+				</div>
 			</div>
 		</div>
 	</div>
-	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-	<script type="text/javascript" th:src="@{/js/address.js}"></script>
 </div>
 </html>

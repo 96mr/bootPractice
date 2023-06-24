@@ -3,12 +3,12 @@ const btnForm = addressForm.elements['submit-address'];
 
 $(document).ready(function(){
 	$.ajax({
-		url : "/address",
+		url : "/api/address",
 		contentType : "application/json",
 		beforeSend: function(xhr){
 	        xhr.setRequestHeader(header, token);
 	    },
-		success : function(data) {
+		success : function(data, status) {
 			if(data.postcode != null){
 				document.getElementById('postcode').innerText = data.postcode;
 				document.getElementById('address').innerText = data.address;
@@ -73,9 +73,9 @@ btnForm.addEventListener("click", function(){
 	}
 	addressForm.reset();
 	if(btnForm.value == 'insert'){
-		addressFormAjax(addressData, "/address", "POST");
+		addressFormAjax(addressData, "/api/address", "POST");
 	}else if(btnForm.value == 'update'){
-		addressFormAjax(addressData, "/address", "PUT");
+		addressFormAjax(addressData, "/api/address", "PUT");
 	}
 });
 function addressFormAjax(data, url, type){

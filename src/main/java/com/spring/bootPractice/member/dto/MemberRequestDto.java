@@ -40,7 +40,7 @@ public class MemberRequestDto {
 				.name(name)
 				.email(email)
 				.regdate(regdate)
-				.auth(Role.ROLE_GUEST)
+				.auth(auth)
 				.build();
 		return member;
 	}
