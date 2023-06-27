@@ -43,7 +43,7 @@ public class ProductController {
 	private final CategoryService categoryService;
 	
 	@GetMapping(value= {"/", "index"})
-	public String index(@PageableDefault(page = 0, size = 4, sort ="hit", direction = Sort.Direction.DESC ) Pageable pageable,
+	public String index(@PageableDefault(page = 0, size = 8, sort ="hit", direction = Sort.Direction.DESC ) Pageable pageable,
 						Model model) {
 		Page<ProductResponseDto> list = productService.productList("main", pageable);
 		model.addAttribute("productList", list);
@@ -53,7 +53,7 @@ public class ProductController {
 	@GetMapping(value= {"/products/{category}","/products/{category}/{subCategory}"})
 	public String categoryList(@PathVariable("category") String category, 
 					   @PathVariable(value="subCategory",required=false) Optional<String> subCategory, 
-					   @PageableDefault(page = 0, size = 4, sort ="regdate", direction = Sort.Direction.DESC) Pageable pageable,
+					   @PageableDefault(page = 0, size = 8, sort ="regdate", direction = Sort.Direction.DESC) Pageable pageable,
 					   Model model) {
 		String argCategory = category;
 		if(subCategory.isPresent()) {
@@ -69,7 +69,7 @@ public class ProductController {
 
 	@GetMapping(value="/product/{id}")
 	public String productInfo(@PathVariable("id") int id, Model model) {
-		model.addAttribute("productNum", id);
+		model.addAttribute("productId", id);
 		return "product/info";
 	}
 	

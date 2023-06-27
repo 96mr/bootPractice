@@ -34,8 +34,11 @@
 				<p class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
 				</div>
 				<div>
-				<input type="number" name="stock" th:field="*{stock}" class="form-control p-4 mb-4" autocomplete="off" placeholder="제품 수량을 입력하세요.">
-				<p class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></p>
+				<select class="form-select form-select-sm w-100 p-2 mb-4" th:field="*{status}" aria-label="판매 상태">
+					<option th:value="FOR_SALE" th:text="판매중"></option>
+					<option th:value="ON_SALE" th:text="할인중"></option>
+					<option th:value="SOLD_OUT" th:text="품절"></option>
+				</select>
 				</div>
 			</div>
 			<div class="col-sm-12 mb-4">

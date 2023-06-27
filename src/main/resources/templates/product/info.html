@@ -13,10 +13,9 @@
 				<div class="m-4">
 					<h4 class="p-2 product-info-name"></h4>
 					<h5 class="p-2 product-info-price"></h5>
-					<span>남은 수량 : </span> <span class="product-info-stock"></span>
 				</div>
 				<form id="product-order-form" class="p-2 mx-auto justify-content-center row">
-					<input type="hidden" name="product-num" />
+					<input type="hidden" name="productId" />
 					<div class="product-count btn-group w-50 m-2">
 						<button type="button" class="btn btn-outline-secondary" name="count-down" value="-">-</button>
 						<input type="number" class="form-control w-50" name="count" value="1" pattern="[0-9]+"/>
@@ -29,7 +28,7 @@
 				</form>
 			</div>
 
-			<div id="modal" class="modal" tabindex="-1">
+			<div id="cart-modal" class="modal" tabindex="-1">
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -42,6 +41,21 @@
 					</div>
 				</div>
 			</div>
+			
+			<div id="order-modal" class="modal" tabindex="-1">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">상품을 구매하시겠습니까?</h5>
+						</div>
+						<div class="modal-body">
+							<button type="button" class="btn btn-light" name="move-order-btn">바로 구매하기</button>
+							<button type="button" class="btn btn-light" data-dismiss="modal">더 둘러보기</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			
 		</div>
 		<hr>
 		<div class="mt-4 mb-4">
@@ -59,24 +73,22 @@
 				alert(msg);
 			}
 			
-		var productNum = [[${productNum}]];
+			var productId = [[${productId}]];
 			$.ajax({
 				type : "GET",
-				url : "/api/product/"+productNum,
+				url : "/api/product/"+productId,
 				contentType : "application/json",
 				beforeSend: function(xhr){
 			        xhr.setRequestHeader(header, token);
 			    },
 				success : function(data, status) {
-					console.log(status);
 					if(status == 'success'){
 						console.log(data);
 						$('.product-info-name').text(data.pname);
-						$('.product-info-stock').text(data.stock+'개');
 						$('.product-info-price').text(data.price+'원');
 						$('.product-info-feature').html(data.pinfo);
 						$('.product-info-img').attr('src','/bootPractice/attach/'+data.thumbnail[0].save_name + data.thumbnail[0].extension);
-						$('input[name=product-num]').val(data.pid);
+						$('input[name=productId]').val(data.pid);
 					}
 				},
 				error : function (xhr){
@@ -112,10 +124,9 @@
 		
 		productOrderForm.find('button[name=cart-btn]').on("click", function(e){
 			var data = {
-					product : productOrderForm.find('input[name=product-num]').val(),
+					productId : productOrderForm.find('input[name=productId]').val(),
 					count : productOrderForm.find('input[name=count]').val()
 			}	
-			console.log(data);
 			$.ajax({
 				data : JSON.stringify(data),
 				type : "POST",
@@ -127,7 +138,7 @@
 				success : function(data, status) {
 					e.preventDefault();
 					if(status == 'success'){
-						$("#modal").modal('show');
+						$("#cart-modal").modal('show');
 					}else{
 						alert("다시 시도해주세요.");
 					}
@@ -137,10 +148,14 @@
 		});
 		
 		productOrderForm.find('button[name=order-btn]').on("click", function(e){
-			var data = {
-					product : productOrderForm.find('input[name=product-num]').val(),
-					count : productOrderForm.find('input[name=count]').val()	
-			}
+			$("#order-modal").modal('show');
+		});
+		
+		$('button[name=move-order-btn]').on("click", function(e){
+			productOrderForm.attr("action","/order");
+			productOrderForm.attr("method","get");
+			productOrderForm.submit();			
+			e.preventDefault();
 		});
 	</script>
 </div>

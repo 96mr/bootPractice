@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import com.spring.bootPractice.product.entity.Category;
 import com.spring.bootPractice.product.entity.Product;
+import com.spring.bootPractice.product.entity.ProductStatus;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,7 @@ public class ProductRequestDto {
 	private String pinfo; //blob
 	@NotNull
 	private int price;
-	private int stock;
+	private ProductStatus status;
 	private Date regdate;
 	private int hit;
 	
@@ -32,7 +33,7 @@ public class ProductRequestDto {
 				.pcategory(pcategory)
 				.pinfo(pinfo)
 				.price(price)
-				.stock(stock)
+				.status(status)
 				.build();
 	}
 }

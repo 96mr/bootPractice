@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -45,7 +47,8 @@ public class Product {
 	@Lob
 	private String pinfo; //blob
 	private int price;
-	private int stock;
+	@Enumerated(EnumType.STRING)
+	private ProductStatus status;
 	@Temporal(TemporalType.DATE)
 	private Date regdate;
 	private int hit;	
@@ -53,12 +56,12 @@ public class Product {
 	private List<Image> thumbnail = new ArrayList<>();
 	
 	@Builder
-	public Product(String pname, Category pcategory, String pinfo, int price, int stock) {
+	public Product(String pname, Category pcategory, String pinfo, int price, ProductStatus status) {
 		this.pname = pname;
 		this.pcategory = pcategory;
 		this.pinfo = pinfo;
 		this.price = price;
-		this.stock = stock;
+		this.status = status;
 	}
 	
 	public void update(int hit) {
@@ -69,5 +72,9 @@ public class Product {
 		this.pname = pname;
 		this.pinfo = pinfo;
 		this.price = price;
+	}
+	
+	public void update(ProductStatus status) {
+		this.status = status;
 	}
 }

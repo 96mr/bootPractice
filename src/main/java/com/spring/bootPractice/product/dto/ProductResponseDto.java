@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.spring.bootPractice.product.entity.Product;
+import com.spring.bootPractice.product.entity.ProductStatus;
 
 import lombok.Getter;
 
@@ -15,7 +16,7 @@ public class ProductResponseDto {
 	private int pcategory;
 	private String pinfo; //blob
 	private int price;
-	private int stock;
+	private ProductStatus status;
 	private Date regdate;
 	private int hit;
 	private List<ImageResponseDto> thumbnail;
@@ -26,7 +27,7 @@ public class ProductResponseDto {
 		this.pcategory = product.getPcategory().getId();
 		this.pinfo = product.getPinfo();
 		this.price = product.getPrice();
-		this.stock = product.getStock();
+		this.status = product.getStatus();
 		this.regdate = product.getRegdate();
 		this.hit = product.getHit();
 		this.thumbnail = product.getThumbnail().stream()

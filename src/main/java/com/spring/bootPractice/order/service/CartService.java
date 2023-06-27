@@ -3,7 +3,6 @@ package com.spring.bootPractice.order.service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import com.spring.bootPractice.global.exception.ErrorCode;
 import com.spring.bootPractice.member.entity.Member;
 import com.spring.bootPractice.order.dto.CartRequestDto;
 import com.spring.bootPractice.order.dto.CartResponseDto;
+import com.spring.bootPractice.order.dto.OrderItemDto;
 import com.spring.bootPractice.order.entity.Cart;
 import com.spring.bootPractice.order.repository.CartRepository;
 import com.spring.bootPractice.product.dto.ImageResponseDto;
@@ -46,36 +46,33 @@ public class CartService {
 			json.addProperty("productName", dto.getProductId().getPname());
 			json.addProperty("productId", dto.getProductId().getPid());
 			json.addProperty("thumbnail", imgUrl);
-			json.addProperty("count", dto.getCount());		
+			json.addProperty("count", dto.getCount());
+			json.addProperty("price", dto.getProductId().getPrice());
 			array.add(json);
 		}	
 		return array;
 	}
 	
 	@Transactional
-	public CartResponseDto save(Map<String, Object> data, Member member) {
-		int pid = Integer.parseInt(String.valueOf(data.get("product")));
-		int count = Integer.parseInt(String.valueOf(data.get("count")));
-		Product product = productRepository.findByPid(pid)
+	public CartResponseDto save(Member member, OrderItemDto item) {
+		Product product = productRepository.findByPid(item.getProductId())
 							.orElseThrow(()->new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 		CartRequestDto dto = CartRequestDto.builder()
 										.productId(product)
 										.memberId(member)
-										.count(count)
+										.count(item.getCount())
 										.build();
 		Cart cart = cartRepository.save(dto.toEntity());
 		return new CartResponseDto(cart);
 	}
 	
 	@Transactional
-	public List<CartResponseDto> save(List<CartResponseDto> list, Map<String, Object> data){	
-		int pid = Integer.parseInt(String.valueOf(data.get("product")));
-		int count = Integer.parseInt(String.valueOf(data.get("count")));
-		Product product = productRepository.findByPid(pid)
+	public List<CartResponseDto> save(List<CartResponseDto> list, OrderItemDto item){	
+		Product product = productRepository.findByPid(item.getProductId())
 							.orElseThrow(()->new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 		CartRequestDto requestDto = CartRequestDto.builder()
 										.productId(product)
-										.count(count)
+										.count(item.getCount())
 										.build();
 		/* 세션에 저장되는 list에 추가
 		 * 1. 장바구니 리스트가 비어있으면 생성
@@ -95,27 +92,24 @@ public class CartService {
 				}
 			}
 		}
-		if(!addChecked) list.add(new CartResponseDto(product, count));					
+		if(!addChecked) list.add(new CartResponseDto(product, item.getCount()));					
 		return list;
 	}
 	
 	@Transactional
-	public CartResponseDto update(Map<String, Object> data) {
-		int num = Integer.parseInt(String.valueOf(data.get("num")));
-		int count = Integer.parseInt(String.valueOf(data.get("count")));
-		Cart cart = cartRepository.findById(num)
+	public CartResponseDto update(OrderItemDto dto) {
+		Cart cart = cartRepository.findById(dto.getNum())
 							.orElseThrow(()-> new CustomException(ErrorCode.CART_NOT_FOUND));
-		cart.update(count);
+		cart.update(dto.getCount());
 		return new CartResponseDto(cart);
 	}
 	
-	public List<CartResponseDto> update(List<CartResponseDto>list, Map<String, Object> data) {
-		int id = Integer.parseInt(String.valueOf(data.get("productId")));
-		int count = Integer.parseInt(String.valueOf(data.get("count")));
+	public List<CartResponseDto> update(List<CartResponseDto>list, OrderItemDto item) {
+		int id = item.getProductId();
 		for(Iterator<CartResponseDto> iterator = list.iterator(); iterator.hasNext();) {
 			CartResponseDto c = iterator.next();
 			if(c.getProductId().getPid() == id) {
-				c.setCount(count);
+				c.setCount(item.getCount());
 				break;
 			}
 		}
@@ -123,15 +117,13 @@ public class CartService {
 	}
 	
 	@Transactional
-	public void delete(String num) {
-		int id = Integer.parseInt(num);
+	public void delete(int id) {
 		Cart cart = cartRepository.findById(id)
 				.orElseThrow(()-> new CustomException(ErrorCode.CART_NOT_FOUND));
 		cartRepository.deleteById(cart.getId());
 	}
 	
-	public List<CartResponseDto> delete(List<CartResponseDto> list, String productId) {
-		int id = Integer.parseInt(productId);
+	public List<CartResponseDto> delete(List<CartResponseDto> list, int id) {
 		for(Iterator<CartResponseDto> iterator = list.iterator(); iterator.hasNext();) {
 			CartResponseDto c = iterator.next();
 			if(c.getProductId().getPid() == id) {

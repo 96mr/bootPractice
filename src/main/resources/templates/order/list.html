@@ -22,9 +22,8 @@
 		
 		$(document).on('click','button[name=cart-delete-btn]',function(){
 			var productDiv = $(this).parent();
-			var price = $(this).siblings('.product-price').text();
 			var data = {
-					productId : $(this).siblings('input[name=productId]').val(),
+					productId : $(this).siblings('input[name=product-num]').val(),
 					num : $(this).siblings('input[name=num]').val()
 			}
 		 	$.ajax({
@@ -37,8 +36,6 @@
 			    },
 				success : function(data, status) {
 					if(status == 'success'){
-						var totalPrice = $('#total-price').text();
-						$('#total-price').text(totalPrice-price);
 						alert("상품이 장바구니에서 삭제되었습니다.");
 						productDiv.remove();
 					}else{
@@ -49,7 +46,7 @@
 		});
 		
  		$(document).on('click', 'button[name=count-down]',function(){
-			var $countInput = $(this).siblings('input[name=count]');
+			var $countInput = $(this).parent().find('input[name=count]');
 			var cnt = Number($countInput.val());
 			if(cnt <= 1 ){
 				alert('최소 수량은 1개 이상');
@@ -60,7 +57,7 @@
 			}
 		});
 		$(document).on('click','button[name=count-up]',function(){
-			var $countInput = $(this).siblings('input[name=count]');
+			var $countInput = $(this).parent().find('input[name=count]');
 			var cnt = Number($countInput.val());
 			$countInput.val(cnt+1);
 			updateCartCount($(this), $countInput.val());
@@ -76,7 +73,7 @@
 		function updateCartCount(obj, cnt){
 			var data = {
 					num : obj.parent().siblings('input[name=num]').val(),
-					productId : obj.parent().siblings('input[name=productId]').val(),
+					productId : obj.parent().siblings('input[name=product-num]').val(),
 					count : cnt
 			}
 			$.ajax({
@@ -88,23 +85,14 @@
 			        xhr.setRequestHeader(header, token);
 			    },
 				success : function(data, status) {
-					var price = obj.parent().siblings('input[name=product-price]').val();
-					var prePrice = obj.parent().siblings('.product-price').text();
-					var curPrice = price * cnt;
-					var totalPrice = $('#total-price').text();
-					obj.parent().siblings('.product-price').text(price * cnt);
-					$('#total-price').text(totalPrice-(prePrice-curPrice));
+					
 				}			
 			});
 		}
 		
 		$(document).on('click','.product-name',function(){
-			var productId = $(this).siblings('input[name=productId]').val();
+			var productId = $(this).siblings('input[name=product-num]').val();
 			location.href='/product/'+productId;
-		});
-		
-		$(document).on('click','button[name=order-btn]',function(){
-			location.href='/order';
 		});
 		
 		$(document).ready(function(){
@@ -117,31 +105,25 @@
 			    },
 				success : function(data, status) {
 					var out = "";
-					var totalPrice = 0;
 					if(status == 'nocontent'){
 						out += "<div class='row p-4 w-100'>장바구니가 비어있습니다.</div>";
 					}
-					if(status == 'success'){
+					if(status == 'success'){		
 						out +="<form id='cart-form' class='p-2 mx-auto justify-content-center row'>";
 						$.each(data, function(idx, item){
-							totalPrice += item.price * item.count;
 							out += "<div class='row p-4 w-100'>";
 							out += "<input type='hidden' name='num' value='" + item.num + "'/>";
-							out += "<input type='hidden' name='productId' value='" + item.productId + "'/>";
-							out += "<input type='hidden' name='product-price' value='"+item.price+"'/>";
+							out += "<input type='hidden' name='product-num' value='" + item.productId + "'/>";
 							out	+= "<span class='product-thumbnail col-3'>";
 							out	+= "<img src='/bootPractice/attach/"+item.thumbnail+"' class='img-thumbnail order-form-img p-2'/></span>";
-							out	+= "<div class='product-name col-3 font-weight-bold'>"+item.productName+"</div>";
+							out	+= "<div class='product-name col-4 font-weight-bold'>"+item.productName+"</div>";
 							out	+= "<div class='product-count col-3 btn-group h-50'>";
 							out += "<button type='button' class='btn btn-outline-light text-dark btn-inline' name='count-down' value='-'>-</button>";
 							out += "<input type='number' class='form-control w-50' name='count' pattern='[0-9]+' value='"+item.count+"'/>";
 							out += "<button type='button' class='btn btn-outline-light text-dark btn-inline' name='count-up' value='+'>+</button></div>";
-							out += "<div class='product-price'>"+item.price * item.count+"</div>원";
 							out += "<button type='button' name='cart-delete-btn' class='btn btn-outline-dark btn-inline mx-auto'>삭제</button></div>";
 						});
-						out += "<hr class='w-100'><div class='row w-100 m-2 p-2'>";
-						out += "<span class='h5 col-6'>총 금액</span><span id='total-price' class='h5 col-5'>"+totalPrice+"</span>원</div>";
-						out += "<button type='button' name='order-btn' class='row btn btn-outline-dark btn-block w-75 mx-auto'>구매하기</button></form>"; 
+						out += "<button type='button' name='order-btn' class='row btn btn-outline-dark btn-block w-50 mx-auto'>구매하기</button></form>"; 
 					}
 					cartList.html(out);
 				}			

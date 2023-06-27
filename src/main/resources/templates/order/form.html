@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
     <th:block layout:fragment="css">
@@ -11,32 +12,45 @@
 	</th:block>
 <div layout:fragment="content">
 	<div class="container justify-content-center text-center p-4">
-		<h2 th:text="상품등록"></h2>
+		<h2 th:text="상품구매"></h2>
 		<form class="w-70 p-4 mx-auto justify-content-center row" method="post" 
 					th:action="@{/purchase(${_csrf.parameterName}=${_csrf.token})}" th:object="${order}">
-			<div class="col-sm-6 p-4 mt-4 mb-4">
-				<select class="form-select form-select-sm w-100 p-2 mb-4" th:field="*{pcategory}" aria-label="카테고리">
-					<option th:each="pcategory : ${category}" th:value="${pcategory.id}" th:text="${pcategory.name}"></option>
-				</select>
-				<div>
-					<input type="text" name="pname" th:field="*{pname}" class="form-control p-4 mb-4" autocomplete="off" placeholder="제품 이름을 입력하세요.">
-					<p class="text-danger" th:if="${#fields.hasErrors('pname')}" th:errors="*{pname}"></p>
+			<div class='row p-4 w-75'>
+				<h5>주문 상품</h5>
+				<input type='hidden' name='num'/>
+				<input type='hidden' name='productId'/>
+				<div class='product-name col-4 font-weight-bold'></div>
+			</div>
+			<hr class='w-75'>
+			<div class='row p-4 w-75'>
+				<h5>배송지 정보</h5>
+				<div class="row w-100 justify-content-center" sec:authorize="hasAnyRole('ROLE_USER')">
+					<input type="radio" name="receive-address" value="default" checked="checked"/>기본 배송지
+					<input type="radio" name="receive-address" value="direct" />직접 입력
+				</div >
+				<div class="row w-75">
+					<input type="text" name="receiver-name" class="form-control col-8 m-2" placeholder="주문자 이름"/><br>
 				</div>
-				<div>
-				<input type="number" name="price" th:field="*{price}" class="form-control p-4 mb-4" autocomplete="off" placeholder="제품 가격을 입력하세요.">
-				<p class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
+				<div class="row w-75">
+					<input type="text" name="receiver-phone" class="form-control col-8 m-2" placeholder="주문자 전화번호"/><br>
 				</div>
-				<div>
-				<input type="number" name="stock" th:field="*{stock}" class="form-control p-4 mb-4" autocomplete="off" placeholder="제품 가격을 입력하세요.">
-				<p class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></p>
+				<div class="row w-75">
+					<input type="text" name="postcode" class="form-control col-4 m-2" placeholder="우편번호"/>
+					<input type="button" id="daum-address" class="btn btn-outline-dark col-3 m-2" value="우편번호 찾기"/><br>
+				</div>
+				<div class="row w-75">
+					<input type="text" name="address" class="form-control col-8 m-2" placeholder="주소"/><br>
+				</div>
+				<div class="row w-75">
+					<input type="text" name="detail-address" class="form-control col-8 m-2" placeholder="상세주소"/>
 				</div>
 			</div>
-			<div class="col-sm-12 mb-4">
-				<textarea id="summernote" name="pinfo" th:field="*{pinfo}" class="form-control p-4 mb-4"></textarea>
-				<p class="text-danger" th:if="${#fields.hasErrors('pinfo')}" th:errors="*{pinfo}"></p>
+			<hr class='w-75'>
+			<div class='row p-4 w-75'>
+				<h5>결제</h5>
 			</div>
-			<button type="submit" class="btn btn-outline-dark btn-block w-50 mx-auto" name="button">등록</button>
-		</form>
+			<button type='button' name='order-btn' class='row btn btn-outline-dark btn-block w-50 mx-auto'>구매하기</button>
+		</form> 
 	</div>
 	<script th:inline="javascript">
 		$(document).ready(function(){
@@ -47,72 +61,32 @@
 		});
 	</script>
 	<script>
-		$('#summernote').summernote({
-	        placeholder: '제품에 대한 설명을 작성해주세요',
-	        tabsize: 2,
-	        height: 500,
-	        lang: 'ko-KR',
-	        toolar:[
-	        	['style',['style']],
-	        	['font', ['bold', 'underline','clear']],
-	        	['color',['color']],
-	        	['table',['table']],
-	        	['insert',['link','picture','video']]
-	        ],
-	        callbacks : { 
-	        	//이미지 업로드
-	            onImageUpload : function(files, editor, welEditable) {
-	            	for (var i = files.length - 1; i >= 0; i--) {
-	            		uploadImageFile(files[i], this);
-	            		console.log(file[i]);
-	            	}
-	            },
-				onPaste : function(e){
-					var data = e.originalEvent.clipboardData;
-					if(data && data.items && data.items.length){
-						var item = data.items[0];
-						if(item.kind === 'file' && item.type.indexOf('image/') !== -1){
-							e.preventDefault();
-						}
-					}		
+	$(document).ready(function(){
+		if($("input[name='receive-address']:checked").val() === 'default'){
+			getAddress();
+		}
+	});
+	$("input[name='receive-address']").change(function(){
+		if($("input[name='receive-address']:checked").val() === 'default'){
+			getAddress();
+		}
+	});
+	function getAddress() {
+		$.ajax({
+			type : "GET",
+			url : "/api/address",
+			processData : false,
+			success : function(data, status) {
+				console.log(data);
+				if(status =='success'){
+					$("input[name='postcode']").val(data.postcode);
+					$("input[name='address']").val(data.address);
+					$("input[name='detail-address']").val(data.detail_address);
 				}
-	         }
-	      });
-		
-		 function uploadImageFile(file, el) {
-				data = new FormData();
-				data.append("file", file);
-				$.ajax({
-					data : data,
-					type : "POST",
-					url : "/product/uploadImage",
-					contentType : false,
-					enctype : 'multipart/form-data',
-					processData : false,
-					success : function(data) {
-						$(el).summernote('editor.insertImage', data.url);
-						console.log(data);
-					}
-				});
 			}
-		 
-		 let thumbnailFile = document.querySelector("#thumbnail"); 
-		 let img = document.querySelector("#previewImage img");
-		 
-		 thumbnailFile.addEventListener('change', () => {
-			 
-			 if(thumbnailFile.files.length > 0){ // 파일 여부를 확인
-				 let reader = new FileReader();
-				 
-			 	reader.onload = function(data){
-			 		console.log(data);
-			 		img.src = data.target.result;
-			 	}
-			 	reader.readAsDataURL(thumbnailFile.files[0]);
-			 }else{
-				 img.src = "";
-			 }
-		 });
+		});
+	}
+
 	</script>
 </div>
 </html>

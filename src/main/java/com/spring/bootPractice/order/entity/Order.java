@@ -16,19 +16,20 @@ import org.hibernate.annotations.DynamicInsert;
 
 import com.spring.bootPractice.member.entity.Member;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 @DynamicInsert
-@Table(name="MEMBER_ORDER", schema="EX4")
+@Table(name="PRODUCT_ORDER", schema="EX4")
 public class Order {
 	@Id
 	private int id;
-	@ManyToOne(fetch= FetchType.LAZY)
-	@JoinColumn(name="member_id")
-	private Member memberId;
+	private String memberId;
 	@Column(name="receiver_name")
 	private String receiverName;
 	@Column(name="receiver_phone")
@@ -40,9 +41,12 @@ public class Order {
 	private String address3;
 	
 	@Builder
-	public Order(Member memberId, String receiverName, String receiverPhone) {
+	public Order(String memberId, String receiverName, String receiverPhone, String address1, String address2, String address3) {
 		this.memberId = memberId;
 		this.receiverName = receiverName;
 		this.receiverPhone = receiverPhone;
+		this.address1 = address1;
+		this.address2 = address2;
+		this.address3 = address3;
 	}
 }

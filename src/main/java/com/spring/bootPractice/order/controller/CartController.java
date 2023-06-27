@@ -1,7 +1,6 @@
 package com.spring.bootPractice.order.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.JsonArray;
 import com.spring.bootPractice.member.entity.MemberDetail;
 import com.spring.bootPractice.order.dto.CartResponseDto;
+import com.spring.bootPractice.order.dto.OrderItemDto;
 import com.spring.bootPractice.order.service.CartService;
 
 import lombok.RequiredArgsConstructor;
@@ -41,46 +41,44 @@ public class CartController {
 		return ResponseEntity.ok()
 							.body(array);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@PostMapping(value = "/api/cart")
-	public ResponseEntity<Object> save(@RequestBody Map<String, Object> data,
+	public ResponseEntity<Object> save(@RequestBody OrderItemDto dto,
 						@AuthenticationPrincipal MemberDetail memberDetail,
 						HttpSession session) {
 		if(memberDetail == null) {
 			List<CartResponseDto> list = (List<CartResponseDto>) session.getAttribute("cart");
-			list = cartService.save(list, data);
+			list = cartService.save(list, dto);
 			session.setAttribute("cart", list);
 		}else {
-			cartService.save(data, memberDetail.getMember());
+			cartService.save(memberDetail.getMember(), dto);
 		}
 		return ResponseEntity.ok().build();
 	}
 	
 	@SuppressWarnings("unchecked")
 	@PutMapping(value="/api/cart")
-	public ResponseEntity<Object> update(@RequestBody Map<String, Object> data, HttpSession session,
+	public ResponseEntity<Object> update(@RequestBody OrderItemDto dto, HttpSession session,
 						@AuthenticationPrincipal MemberDetail memberDetail) {
 		if((memberDetail == null)) {
 			List<CartResponseDto> list = (List<CartResponseDto>) session.getAttribute("cart");
-			list = cartService.update(list, data);
+			list = cartService.update(list, dto);
 			session.setAttribute("cart", list);
 		}else {
-			cartService.update(data);
+			cartService.update(dto);
 		}
 		return ResponseEntity.ok().build();
 	}
 	
 	@SuppressWarnings("unchecked")
 	@DeleteMapping(value="/api/cart")
-	public ResponseEntity<Object> delete(@RequestBody Map<String, Object> data, HttpSession session) {
-		String productId = String.valueOf(data.get("productId"));
-		String num = String.valueOf(data.get("num"));
-		if(Integer.parseInt(num) == 0) {
+	public ResponseEntity<Object> delete(@RequestBody OrderItemDto dto, HttpSession session) {
+		if(dto.getNum() == 0) {
 			List<CartResponseDto> list = (List<CartResponseDto>) session.getAttribute("cart");
-			cartService.delete(list, productId);
+			cartService.delete(list, dto.getProductId());
 		}else {
-			cartService.delete(num);
+			cartService.delete(dto.getNum());
 		}
 		return ResponseEntity.ok().build();
 	}

@@ -1,8 +1,8 @@
 package com.spring.bootPractice.order.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.spring.bootPractice.product.dto.ProductRequestDto;
-import com.spring.bootPractice.product.service.CategoryService;
 import com.spring.bootPractice.product.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,14 +21,22 @@ import lombok.RequiredArgsConstructor;
 public class OrderController {
 	
 	private final ProductService productService;
-	private final CategoryService categoryService;
 
+	@GetMapping(value="/cart")
+	public String cart() {
+		return "/order/cart";
+	}
 	
-	@Secured("ROLE_USER")
+	@GetMapping(value="/orders")
+	public String list(Model model) {
+		return "/order/list";
+	}
+	
 	@GetMapping(value="/order")
-	public String save(Model model) {
-		model.addAttribute("product", new ProductRequestDto());
-		model.addAttribute("category", categoryService.getChildrenList());
+	public String orderForm(HttpServletRequest request, Model model) {
+		String productNum = request.getParameter("productId");
+		String count = request.getParameter("count");
+		productService.getProductInfo(Integer.parseInt(productNum));
 		return "/order/form";
 	}
 	
@@ -37,7 +44,6 @@ public class OrderController {
 	public String save(@Valid @ModelAttribute("order") ProductRequestDto dto, 
 						BindingResult result, RedirectAttributes rttr, Model model) {
 		if(result.hasErrors()) {
-			model.addAttribute("category", categoryService.getChildrenList());
 			return "/order/form";
 		}
 		if(dto != null) {
