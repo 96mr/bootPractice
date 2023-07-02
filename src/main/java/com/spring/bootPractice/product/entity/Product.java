@@ -68,13 +68,11 @@ public class Product {
 		this.hit = hit;
 	}
 	
-	public void update(String pname, String pinfo, int price) {
+	public void update(String pname, Category pcategory, String pinfo, int price, ProductStatus status) {
 		this.pname = pname;
+		this.pcategory = pcategory;
 		this.pinfo = pinfo;
 		this.price = price;
-	}
-	
-	public void update(ProductStatus status) {
 		this.status = status;
 	}
 }

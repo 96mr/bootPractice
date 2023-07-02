@@ -30,7 +30,7 @@ public class AddressController {
 		AddressResponseDto result = addressService.getAddressById(member);
 		json.addProperty("postcode", result.getAddress1());
 		json.addProperty("address", result.getAddress2());
-		json.addProperty("detail_address", result.getAddress3());
+		json.addProperty("detailAddress", result.getAddress3());
 		return ResponseEntity.ok()
 							.body(json);
 	}
@@ -43,7 +43,7 @@ public class AddressController {
 		AddressResponseDto result = addressService.save(addressDto, member);
 		json.addProperty("postcode", result.getAddress1());
 		json.addProperty("address", result.getAddress2());
-		json.addProperty("detail_address", result.getAddress3());
+		json.addProperty("detailAddress", result.getAddress3());
 		return ResponseEntity.ok()
 							.body(json);
 	}
@@ -56,7 +56,7 @@ public class AddressController {
 		AddressResponseDto result = addressService.update(addressDto, member);
 		json.addProperty("postcode", result.getAddress1());
 		json.addProperty("address", result.getAddress2());
-		json.addProperty("detail_address", result.getAddress3());
+		json.addProperty("detailAddress", result.getAddress3());
 		return ResponseEntity.ok()
 							.body(json);
 	}

@@ -14,7 +14,8 @@
 					<h4 class="p-2 product-info-name"></h4>
 					<h5 class="p-2 product-info-price"></h5>
 				</div>
-				<form id="product-order-form" class="p-2 mx-auto justify-content-center row">
+				<form id="product-order-form" class="p-2 mx-auto justify-content-center row" >
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 					<input type="hidden" name="productId" />
 					<div class="product-count btn-group w-50 m-2">
 						<button type="button" class="btn btn-outline-secondary" name="count-down" value="-">-</button>
@@ -55,7 +56,6 @@
 					</div>
 				</div>
 			</div>
-			
 		</div>
 		<hr>
 		<div class="mt-4 mb-4">
@@ -63,7 +63,7 @@
 			<div class="p-4 product-info-feature"></div>
 		</div>
 		<div>
-			<a th:href="@{/product}" sec:authorize="hasRole('ROLE_ADMIN')">제품 정보 수정</a>
+			<a th:href="@{/product/modify/{id} (id = ${productId})}" sec:authorize="hasRole('ROLE_ADMIN')">제품 정보 수정</a>
 		</div>
 	</div>
 	<script th:inline="javascript">		
@@ -83,12 +83,11 @@
 			    },
 				success : function(data, status) {
 					if(status == 'success'){
-						console.log(data);
 						$('.product-info-name').text(data.pname);
 						$('.product-info-price').text(data.price+'원');
 						$('.product-info-feature').html(data.pinfo);
 						$('.product-info-img').attr('src','/bootPractice/attach/'+data.thumbnail[0].save_name + data.thumbnail[0].extension);
-						$('input[name=productId]').val(data.pid);
+						$("input[name='productId']").val(data.pid);
 					}
 				},
 				error : function (xhr){
@@ -122,10 +121,10 @@
 				}
 		);
 		
-		productOrderForm.find('button[name=cart-btn]').on("click", function(e){
+		productOrderForm.find('button[name=cart-btn]').on("click", function(e){			
 			var data = {
-					productId : productOrderForm.find('input[name=productId]').val(),
-					count : productOrderForm.find('input[name=count]').val()
+					productId : productOrderForm.find("input[name='productId']").val(),
+					count : productOrderForm.find("input[name='count']").val()
 			}	
 			$.ajax({
 				data : JSON.stringify(data),
@@ -151,9 +150,9 @@
 			$("#order-modal").modal('show');
 		});
 		
-		$('button[name=move-order-btn]').on("click", function(e){
-			productOrderForm.attr("action","/order");
-			productOrderForm.attr("method","get");
+	 	$('button[name=move-order-btn]').on("click", function(e){
+			productOrderForm.attr("action","/order/form");
+			productOrderForm.attr("method","post");
 			productOrderForm.submit();			
 			e.preventDefault();
 		});

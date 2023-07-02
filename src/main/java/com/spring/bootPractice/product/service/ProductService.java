@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
@@ -77,6 +78,29 @@ public class ProductService {
 	public ProductResponseDto getProductInfo(int pid) {
 		Product product= productRepository.findByPid(pid)
 							.orElseThrow(()-> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+		return new ProductResponseDto(product);
+	}
+	
+	public ProductRequestDto parseProductRequestDto(ProductResponseDto dto) {
+		Optional<Category> category = categoryRepository.findById(dto.getPcategory());
+		ProductRequestDto requestDto = ProductRequestDto.builder()
+				.pid(dto.getPid())
+				.pname(dto.getPname())
+				.pcategory(category.get())
+				.pinfo(dto.getPinfo())
+				.price(dto.getPrice())
+				.status(dto.getStatus())
+				.thumbnail(dto.getThumbnail())
+				.build();
+		return requestDto;
+	}
+	
+	@Transactional
+	public ProductResponseDto update(ProductRequestDto productDto) {
+		Product product = productRepository.findByPid(productDto.getPid())
+										.orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+		product.update(productDto.getPname(), productDto.getPcategory(), productDto.getPinfo()
+						, productDto.getPrice(), productDto.getStatus());
 		return new ProductResponseDto(product);
 	}
 	

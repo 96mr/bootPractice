@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+    <th:block layout:fragment="css">
+		<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet"> 
+	</th:block>
+	<th:block layout:fragment ="script">
+		<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+		<script src=" https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
+	</th:block>
+<div layout:fragment="content">
+	<div class="container justify-content-center text-center p-4">
+		<h2 th:text="상품등록"></h2>
+		<form class="w-70 p-4 mx-auto justify-content-center row" enctype="multipart/form-data" method="POST" 
+					th:action="@{/product/modify(${_csrf.parameterName}=${_csrf.token})}" th:object="${product}">
+			<input type="hidden" th:field="*{pid}">
+			<div class="col-sm-5 p-2">
+				<div id="previewImage" class="m-2">
+					<img th:src="'/bootPractice/attach/'+${product.thumbnail[0].save_name} + ${product.thumbnail[0].extension}" class="img-thumbnail img-fluid p-2"/>
+				</div>
+			</div>
+			<div class="col-sm-6 p-4 mt-4 mb-4">
+				<select class="form-select form-select-sm w-100 p-2 mb-4" th:field="*{pcategory}" aria-label="카테고리">
+					<option th:each="pcategory : ${category}" th:value="${pcategory.id}" th:text="${pcategory.name}"></option>
+				</select>
+				<div>
+					<input type="text" name="pname" th:field="*{pname}" class="form-control p-4 mb-4" autocomplete="off" placeholder="제품 이름을 입력하세요.">
+					<p class="text-danger" th:if="${#fields.hasErrors('pname')}" th:errors="*{pname}"></p>
+				</div>
+				<div>
+				<input type="number" name="price" th:field="*{price}" class="form-control p-4 mb-4" autocomplete="off" placeholder="제품 가격을 입력하세요.">
+				<p class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
+				</div>
+				<div>
+				<select class="form-select form-select-sm w-100 p-2 mb-4" th:field="*{status}" aria-label="판매 상태">
+					<option th:value="FOR_SALE" th:text="판매중"></option>
+					<option th:value="ON_SALE" th:text="할인중"></option>
+					<option th:value="SOLD_OUT" th:text="품절"></option>
+				</select>
+				</div>
+			</div>
+			<div class="col-sm-12 mb-4">
+				<textarea id="summernote" name="pinfo" th:field="*{pinfo}" class="form-control p-4 mb-4"></textarea>
+				<p class="text-danger" th:if="${#fields.hasErrors('pinfo')}" th:errors="*{pinfo}"></p>
+			</div>
+			<button type="submit" class="btn btn-outline-dark btn-block w-50 mx-auto" name="button">등록</button>
+		</form>
+	</div>
+	<script th:inline="javascript">
+		$(document).ready(function(){
+			var msg = [[${errorMsg}]];
+			if(msg) {
+				alert(msg);
+			}
+		});
+	</script>
+	<script>
+	var header = $("meta[name='_csrf_header']").attr('content');
+	var token = $("meta[name='_csrf']").attr('content');
+		$('#summernote').summernote({
+	        placeholder: '제품에 대한 설명을 작성해주세요',
+	        tabsize: 2,
+	        height: 500,
+	        lang: 'ko-KR',
+	        toolar:[
+	        	['style',['style']],
+	        	['font', ['bold', 'underline','clear']],
+	        	['color',['color']],
+	        	['table',['table']],
+	        	['insert',['link','picture','video']]
+	        ],
+	        callbacks : { 
+	        	//이미지 업로드
+	            onImageUpload : function(files, editor, welEditable) {
+	            	for (var i = files.length - 1; i >= 0; i--) {
+	            		uploadImageFile(files[i], this);
+	            		console.log(file[i]);
+	            	}
+	            },
+				onPaste : function(e){
+					var data = e.originalEvent.clipboardData;
+					if(data && data.items && data.items.length){
+						var item = data.items[0];
+						if(item.kind === 'file' && item.type.indexOf('image/') !== -1){
+							e.preventDefault();
+						}
+					}		
+				}
+	         }
+	      });
+		
+		 function uploadImageFile(file, el) {
+				data = new FormData();
+				data.append("file", file);
+				$.ajax({
+					data : data,
+					type : "POST",
+					url : "/product/uploadImage",
+					contentType : false,
+					enctype : 'multipart/form-data',
+					processData : false,
+					beforeSend: function(xhr){
+				        xhr.setRequestHeader(header, token);
+				    },
+					success : function(data) {
+						$(el).summernote('editor.insertImage', data.url);
+						console.log(data);
+					}
+				});
+			}
+
+	</script>
+</div>
+</html>

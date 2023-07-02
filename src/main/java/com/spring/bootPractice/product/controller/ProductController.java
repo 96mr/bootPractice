@@ -42,7 +42,7 @@ public class ProductController {
 	private final ProductService productService;
 	private final CategoryService categoryService;
 	
-	@GetMapping(value= {"/", "index"})
+	@GetMapping(value= {"/", "/index"})
 	public String index(@PageableDefault(page = 0, size = 8, sort ="hit", direction = Sort.Direction.DESC ) Pageable pageable,
 						Model model) {
 		Page<ProductResponseDto> list = productService.productList("main", pageable);
@@ -104,6 +104,28 @@ public class ProductController {
 			model.addAttribute("msg", "다시 시도해주세요.");
 			return "product/create";
 		}
+	}
+	
+	@Secured("ROLE_ADMIN")
+	@GetMapping(value="/product/modify/{id}")
+	public String update(@PathVariable("id") int id, Model model) {
+		ProductResponseDto responseDto = productService.getProductInfo(id);
+
+		model.addAttribute("product", productService.parseProductRequestDto(responseDto));
+		model.addAttribute("category", categoryService.getChildrenList());
+		return "product/modify";
+	}
+	
+	@PostMapping(value = "/product/modify")
+	public String update(@Valid @ModelAttribute("product") ProductRequestDto productDto, BindingResult result, 
+						RedirectAttributes rttr, Model model) {
+		if(result.hasErrors()) {
+			model.addAttribute("category", categoryService.getChildrenList());
+			return "product/modify";
+		}
+		ProductResponseDto dto = productService.update(productDto);	
+		rttr.addFlashAttribute("msg", "정보가 변경되었습니다.");
+		return "redirect:/product/"+dto.getPid();
 	}
 	
 	@Secured("ROLE_ADMIN")

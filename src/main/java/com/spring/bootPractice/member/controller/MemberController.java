@@ -36,13 +36,14 @@ public class MemberController {
 	private final MailService mailService;
 
 	@RequestMapping(value="/login", method = {RequestMethod.GET, RequestMethod.POST})
-	public String login(HttpServletRequest request, Authentication authentication) {
+	public String login(HttpServletRequest request, Authentication authentication, Model model) {
 		if(authentication != null) {
 			return "redirect:/";
 		}
+		HttpSession session = request.getSession();
 		String uri = request.getHeader("Referer");
 	    if (uri != null && !uri.contains("/login")) {
-	        request.getSession().setAttribute("prevPage", uri);
+	    	session.setAttribute("prevPage", uri);
 	    }
 		return "login";
 	}
