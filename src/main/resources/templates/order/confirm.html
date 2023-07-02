@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<div layout:fragment="content">
+	<div class="container w-50 text-center mx-auto p-2 bg-white">
+		<h2 class="p-2 mb-4">주문 완료</h2>
+		<div class="row p-4 w-75 mx-auto justify-content-center">
+			<h5>주문이 완료되었습니다.</h5>
+		</div>
+		<hr class='w-75'>
+		<div class="row p-4 w-75 mx-auto justify-content-center">
+			<div class="col-sm-4 p-2 text-center">주문번호</div><div class="order-id col-md-8 p-2"></div>
+		</div>
+		<hr class='w-75'>
+		<div class="row p-4 w-75 mx-auto justify-content-center">
+			<div class="col-sm-4 p-2">주문자 </div><div class="receiver col-md-8 p-2"></div>
+			<div class="col-sm-4 p-2">배송지 </div><div class="address col-md-8 p-2"></div>
+		</div>
+		<hr class='w-75'>
+		<div class="row p-4 w-75 mx-auto justify-content-center">
+			<div class="col-sm-4 p-2">주문 금액</div><div class="totalPrice col-md-8 p-2"></div>
+		</div>
+	</div>
+	<script th:inline="javascript">
+		$(document).ready(function(){
+			var order = [[${order}]];
+			$('.order-id').text(order.orderId);
+			$('.receiver').text(order.receiverName +" / "+ order.receiverPhone);
+			$('.address').text(order.address+" "+order.detailAddress);
+			$('.totalPrice').text(totalPrice(order.items)+"원");
+		});
+		
+		function totalPrice(arr){
+			var total = 0;
+			$.each(arr, function(idx, item){
+				total += item.totalPrice;
+			});
+			return total;
+		}
+	</script>
+	<script>
+	</script>
+</div>
+</html>

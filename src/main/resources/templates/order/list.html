@@ -4,7 +4,7 @@
       layout:decorate="~{layout}">
 <div layout:fragment="content">
 	<div class="container w-50 text-center p-2 bg-white">
-		<h2 class="p-2 mb-4">장바구니</h2>
+		<h2 class="p-2 mb-4">주문 내역</h2>
 		<div id = "cart-list">
 		</div>
 		<hr>
@@ -15,119 +15,6 @@
 			if(msg) {
 				alert(msg);
 			}
-		});
-	</script>
-	<script>
-		const cartList = $('#cart-list');
-		
-		$(document).on('click','button[name=cart-delete-btn]',function(){
-			var productDiv = $(this).parent();
-			var data = {
-					productId : $(this).siblings('input[name=product-num]').val(),
-					num : $(this).siblings('input[name=num]').val()
-			}
-		 	$.ajax({
-				data : JSON.stringify(data),
-				type : "DELETE",
-				url : "/api/cart/",
-				contentType : "application/json",
-				beforeSend: function(xhr){
-			        xhr.setRequestHeader(header, token);
-			    },
-				success : function(data, status) {
-					if(status == 'success'){
-						alert("상품이 장바구니에서 삭제되었습니다.");
-						productDiv.remove();
-					}else{
-						alert("다시 시도해주세요.");
-					}
-				}	
-			}); 
-		});
-		
- 		$(document).on('click', 'button[name=count-down]',function(){
-			var $countInput = $(this).parent().find('input[name=count]');
-			var cnt = Number($countInput.val());
-			if(cnt <= 1 ){
-				alert('최소 수량은 1개 이상');
-				$countInput.val(1);
-			}else{
-				$countInput.val(cnt-1);
-				updateCartCount($(this), $countInput.val());
-			}
-		});
-		$(document).on('click','button[name=count-up]',function(){
-			var $countInput = $(this).parent().find('input[name=count]');
-			var cnt = Number($countInput.val());
-			$countInput.val(cnt+1);
-			updateCartCount($(this), $countInput.val());
-		});
-		$(document).on('change','input[name=count]',function(){
-			var cnt = Number($(this).val());
-			if(cnt <= 0 ){
-				alert('최소 수량은 1개 이상');
-				$(this).val(1);
-			}
-			updateCartCount($(this), $(this).val());
-		});
-		function updateCartCount(obj, cnt){
-			var data = {
-					num : obj.parent().siblings('input[name=num]').val(),
-					productId : obj.parent().siblings('input[name=product-num]').val(),
-					count : cnt
-			}
-			$.ajax({
-				data : JSON.stringify(data),
-				url:"/api/cart",
-				type : "PUT",
-				contentType : "application/json",
-				beforeSend: function(xhr){
-			        xhr.setRequestHeader(header, token);
-			    },
-				success : function(data, status) {
-					
-				}			
-			});
-		}
-		
-		$(document).on('click','.product-name',function(){
-			var productId = $(this).siblings('input[name=product-num]').val();
-			location.href='/product/'+productId;
-		});
-		
-		$(document).ready(function(){
-			$.ajax({
-				url:"/api/cart",
-				type : "GET",
-				contentType : "application/json",
-				beforeSend: function(xhr){
-			        xhr.setRequestHeader(header, token);
-			    },
-				success : function(data, status) {
-					var out = "";
-					if(status == 'nocontent'){
-						out += "<div class='row p-4 w-100'>장바구니가 비어있습니다.</div>";
-					}
-					if(status == 'success'){		
-						out +="<form id='cart-form' class='p-2 mx-auto justify-content-center row'>";
-						$.each(data, function(idx, item){
-							out += "<div class='row p-4 w-100'>";
-							out += "<input type='hidden' name='num' value='" + item.num + "'/>";
-							out += "<input type='hidden' name='product-num' value='" + item.productId + "'/>";
-							out	+= "<span class='product-thumbnail col-3'>";
-							out	+= "<img src='/bootPractice/attach/"+item.thumbnail+"' class='img-thumbnail order-form-img p-2'/></span>";
-							out	+= "<div class='product-name col-4 font-weight-bold'>"+item.productName+"</div>";
-							out	+= "<div class='product-count col-3 btn-group h-50'>";
-							out += "<button type='button' class='btn btn-outline-light text-dark btn-inline' name='count-down' value='-'>-</button>";
-							out += "<input type='number' class='form-control w-50' name='count' pattern='[0-9]+' value='"+item.count+"'/>";
-							out += "<button type='button' class='btn btn-outline-light text-dark btn-inline' name='count-up' value='+'>+</button></div>";
-							out += "<button type='button' name='cart-delete-btn' class='btn btn-outline-dark btn-inline mx-auto'>삭제</button></div>";
-						});
-						out += "<button type='button' name='order-btn' class='row btn btn-outline-dark btn-block w-50 mx-auto'>구매하기</button></form>"; 
-					}
-					cartList.html(out);
-				}			
-			});
 		});
 	</script>
 </div>

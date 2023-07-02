@@ -88,12 +88,14 @@
 			        xhr.setRequestHeader(header, token);
 			    },
 				success : function(data, status) {
-					var price = obj.parent().siblings('input[name=product-price]').val();
-					var prePrice = obj.parent().siblings('.product-price').text();
-					var curPrice = price * cnt;
-					var totalPrice = $('#total-price').text();
-					obj.parent().siblings('.product-price').text(price * cnt);
-					$('#total-price').text(totalPrice-(prePrice-curPrice));
+					if(status == 'success'){
+						var price = obj.parent().siblings('input[name=product-price]').val();
+						var prePrice = obj.parent().siblings('.product-price').text();
+						var curPrice = price * cnt;
+						var totalPrice = $('#total-price').text();
+						obj.parent().siblings('.product-price').text(price * cnt);
+						$('#total-price').text(totalPrice-(prePrice-curPrice));
+					}
 				}			
 			});
 		}
@@ -104,7 +106,7 @@
 		});
 		
 		$(document).on('click','button[name=order-btn]',function(){
-			location.href='/order';
+			location.href='/order/form';
 		});
 		
 		$(document).ready(function(){
@@ -130,8 +132,8 @@
 							out += "<input type='hidden' name='productId' value='" + item.productId + "'/>";
 							out += "<input type='hidden' name='product-price' value='"+item.price+"'/>";
 							out	+= "<span class='product-thumbnail col-3'>";
-							out	+= "<img src='/bootPractice/attach/"+item.thumbnail+"' class='img-thumbnail order-form-img p-2'/></span>";
-							out	+= "<div class='product-name col-3 font-weight-bold'>"+item.productName+"</div>";
+							out	+= "<img src='"+item.thumbnail+"' class='img-thumbnail order-form-img p-2'/></span>";
+							out	+= "<div class='product-name col-3 font-weight-bold'>"+item.name+"</div>";
 							out	+= "<div class='product-count col-3 btn-group h-50'>";
 							out += "<button type='button' class='btn btn-outline-light text-dark btn-inline' name='count-down' value='-'>-</button>";
 							out += "<input type='number' class='form-control w-50' name='count' pattern='[0-9]+' value='"+item.count+"'/>";

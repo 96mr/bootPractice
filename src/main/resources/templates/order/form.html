@@ -11,64 +11,118 @@
 		<script src=" https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
 	</th:block>
 <div layout:fragment="content">
-	<div class="container justify-content-center text-center p-4">
+	<div class="container justify-content-center text-center p-4" >
 		<h2 th:text="상품구매"></h2>
-		<form class="w-70 p-4 mx-auto justify-content-center row" method="post" 
-					th:action="@{/purchase(${_csrf.parameterName}=${_csrf.token})}" th:object="${order}">
+		<div class="row w-100 justify-content-center">
+		<form id="order-form" class="w-70 p-4 mx-auto justify-content-center row">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 			<div class='row p-4 w-75'>
 				<h5>주문 상품</h5>
-				<input type='hidden' name='num'/>
-				<input type='hidden' name='productId'/>
-				<div class='product-name col-4 font-weight-bold'></div>
+				<div class="row w-100 justify-content-center order-list">
+				</div>
+			</div>
+			<hr class='w-75'>
+			<div class="row p-4 w-75">
+				<h5>주문자 정보</h5>
+				<div class="row w-100 justify-content-center">	
+					<input type="text" name="receiverName" class="form-control col-8 m-2" placeholder="주문자명"/><br>
+					<input type="text" name="receiverPhone" class="form-control col-8 m-2" maxlength="13" placeholder="전화번호"/><br>
+				</div>
 			</div>
 			<hr class='w-75'>
 			<div class='row p-4 w-75'>
 				<h5>배송지 정보</h5>
-				<div class="row w-100 justify-content-center" sec:authorize="hasAnyRole('ROLE_USER')">
-					<input type="radio" name="receive-address" value="default" checked="checked"/>기본 배송지
-					<input type="radio" name="receive-address" value="direct" />직접 입력
-				</div >
-				<div class="row w-75">
-					<input type="text" name="receiver-name" class="form-control col-8 m-2" placeholder="주문자 이름"/><br>
+				<div class="row m-4 w-100" sec:authorize="hasAnyRole('ROLE_USER')">
+					<div class="form-check form-check-inline">
+						<input type="radio" class="form-check-input" name="receive-address" value="default" checked="checked"/>기본 배송지
+					</div>
+					<div class="form-check form-check-inline">
+						<input type="radio" class="form-check-input" name="receive-address" value="direct" />직접 입력
+					</div>
 				</div>
-				<div class="row w-75">
-					<input type="text" name="receiver-phone" class="form-control col-8 m-2" placeholder="주문자 전화번호"/><br>
-				</div>
-				<div class="row w-75">
+				<div class="row w-100">
 					<input type="text" name="postcode" class="form-control col-4 m-2" placeholder="우편번호"/>
 					<input type="button" id="daum-address" class="btn btn-outline-dark col-3 m-2" value="우편번호 찾기"/><br>
 				</div>
-				<div class="row w-75">
+				<div class="row w-100">
 					<input type="text" name="address" class="form-control col-8 m-2" placeholder="주소"/><br>
 				</div>
-				<div class="row w-75">
-					<input type="text" name="detail-address" class="form-control col-8 m-2" placeholder="상세주소"/>
+				<div class="row w-100">
+					<input type="text" name="detailAddress" class="form-control col-8 m-2" placeholder="상세주소"/>
 				</div>
 			</div>
 			<hr class='w-75'>
 			<div class='row p-4 w-75'>
 				<h5>결제</h5>
 			</div>
-			<button type='button' name='order-btn' class='row btn btn-outline-dark btn-block w-50 mx-auto'>구매하기</button>
+			<button type='submit' name='order-btn' class='row btn btn-outline-dark btn-block w-50 mx-auto'>구매하기</button>
 		</form> 
+		</div>
 	</div>
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 	<script th:inline="javascript">
 		$(document).ready(function(){
-			var msg = [[${errorMsg}]];
-			if(msg) {
-				alert(msg);
+			if($("input[name='receive-address']:checked").val() === 'default'){
+				getAddress();
+			}
+			
+			if([[${item}]] != null){
+				var product = [[${item}]];
+				var out = makeOrderListHtml(product, 0);
+				$('.order-list').html(out);
+			}else{
+				$.ajax({
+					url:"/api/cart",
+					type : "GET",
+					contentType : "application/json",
+					beforeSend: function(xhr){
+				        xhr.setRequestHeader(header, token);
+				    },
+					success : function(data, status) {
+						var out = "";
+						if(status == 'nocontent'){
+							$('.order-list').html("제품이 존재하지 않습니다.");
+						}
+						if(status == 'success'){
+						 	$.each(data, function(idx, item){
+								out += makeOrderListHtml(item, idx);
+							});
+							$('.order-list').html(out);
+						}
+					}			
+				});
 			}
 		});
+		
+		function makeOrderListHtml(item, idx){
+			var out = "";
+			out += "<div class='row w-100'>";
+			out += "<input type='hidden' name='items["+idx+"].thumbnail' value='"+item.thumbnail+"'/>";
+			out += "<input type='hidden' name='items["+idx+"].productId' value='"+item.productId+"'/>";
+			out += "<input type='hidden' name='items["+idx+"].name' value='"+item.name+"'/>";
+			out += "<input type='hidden' name='items["+idx+"].count' value='"+item.count+"'/>";
+			out += "<input type='hidden' name='items["+idx+"].totalPrice' value='"+item.totalPrice+"'/>";
+			out += "<span class='product-thumbnail col-3'>";
+			out += "<img src='"+item.thumbnail+"' class='img-thumbnail order-form-img p-2'/></span>";
+			out += "<div class='product-name col-3 font-weight-bold'>"+item.name+"</div>";
+			out += "<div class='product-count col-3'>"+item.count+"개</div>";
+			out += "<div class='product-totalPrice col-3'>"+item.totalPrice+"원</div></div>";
+			return out;
+		}
 	</script>
 	<script>
-	$(document).ready(function(){
-		if($("input[name='receive-address']:checked").val() === 'default'){
-			getAddress();
-		}
+	$("input[name='receiverPhone']").on("keyup input change", function() {
+		$(this).val( $(this).val().replace(/[^0-9]/g, "")
+				.replace(/(^02|^0505|^1[0-9]{3}|^0[0-9]{2})([0-9]+)?([0-9]{4})$/,"$1-$2-$3").replace("--", "-") );
+
 	});
 	$("input[name='receive-address']").change(function(){
 		if($("input[name='receive-address']:checked").val() === 'default'){
 			getAddress();
+		}else{
+			$("input[name='postcode']").val('').attr("readonly", false);
+			$("input[name='address']").val('').attr("readonly", false);
+			$("input[name='detailAddress']").val('').attr("readonly", false);
 		}
 	});
 	function getAddress() {
@@ -77,16 +131,53 @@
 			url : "/api/address",
 			processData : false,
 			success : function(data, status) {
-				console.log(data);
 				if(status =='success'){
-					$("input[name='postcode']").val(data.postcode);
-					$("input[name='address']").val(data.address);
-					$("input[name='detail-address']").val(data.detail_address);
+					$("input[name='postcode']").val(data.postcode).attr("readonly", true);
+					$("input[name='address']").val(data.address).attr("readonly", true);
+					$("input[name='detailAddress']").val(data.detailAddress).attr("readonly", true);
 				}
 			}
 		});
 	}
+	
+	$('#daum-address').on("click",function(){
+		new daum.Postcode({
+	        oncomplete: function(data) {
+	            var addr = ''; // 주소 변수
+	            var extraAddr = ''; // 참고항목 변수
 
+	            //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+	            addr = data.roadAddress;
+
+	            // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+	            // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+	            if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+	                extraAddr += data.bname;
+	            }
+	            // 건물명이 있고, 공동주택일 경우 추가한다.
+	            if(data.buildingName !== '' && data.apartment === 'Y'){
+	                extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+	            }
+	            // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+	            if(extraAddr !== ''){
+	                extraAddr = ' (' + extraAddr + ')';
+	            }
+	            // 조합된 참고항목을 해당 필드에 넣는다.
+	            addr += extraAddr;
+
+	            $("input[name='postcode']").val(data.zonecode);
+	            $("input[name='address']").val(addr);
+	            $("input[name='detailAddress']").focus();
+	        }
+	    }).open();
+	});
+	
+	$('button[name=order-btn]').on("click", function(e){
+		$('#order-form').attr("action","/order");
+		$('#order-form').attr("method","post");
+		$('#order-form').submit();			
+		e.preventDefault();
+	});
 	</script>
 </div>
 </html>

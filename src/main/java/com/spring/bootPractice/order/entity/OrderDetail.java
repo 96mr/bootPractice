@@ -4,9 +4,12 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -20,11 +23,13 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
+@SequenceGenerator(name="ORDER_DETAIL_GEN_SEQ", sequenceName="ORDER_DETAIL_SEQ", allocationSize=1)
 @Entity
 @DynamicInsert
 @Table(name="ORDER_DETAIL", schema="EX4")
 public class OrderDetail {
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="ORDER_DETAIL_GEN_SEQ")
 	private int id;
 	@ManyToOne(fetch= FetchType.LAZY)
 	@JoinColumn(name="order_id")

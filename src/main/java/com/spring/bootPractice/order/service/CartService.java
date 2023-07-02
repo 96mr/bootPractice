@@ -23,9 +23,11 @@ import com.spring.bootPractice.product.entity.Product;
 import com.spring.bootPractice.product.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CartService {
 	private final CartRepository cartRepository;
 	private final ProductRepository productRepository;
@@ -41,13 +43,14 @@ public class CartService {
 		for(CartResponseDto dto : list) {
 			JsonObject json = new JsonObject();
 			ImageResponseDto image = new ImageResponseDto(dto.getProductId().getThumbnail().get(0));
-			String imgUrl = image.getSave_name() + image.getExtension();
+			String imgUrl = "/bootPractice/attach/"+ image.getSave_name() + image.getExtension();
 			json.addProperty("num", dto.getId());
-			json.addProperty("productName", dto.getProductId().getPname());
+			json.addProperty("name", dto.getProductId().getPname());
 			json.addProperty("productId", dto.getProductId().getPid());
 			json.addProperty("thumbnail", imgUrl);
 			json.addProperty("count", dto.getCount());
 			json.addProperty("price", dto.getProductId().getPrice());
+			json.addProperty("totalPrice", dto.getCount() * dto.getProductId().getPrice());
 			array.add(json);
 		}	
 		return array;
@@ -55,6 +58,7 @@ public class CartService {
 	
 	@Transactional
 	public CartResponseDto save(Member member, OrderItemDto item) {
+		log.info("장바구니 추가");
 		Product product = productRepository.findByPid(item.getProductId())
 							.orElseThrow(()->new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 		CartRequestDto dto = CartRequestDto.builder()
