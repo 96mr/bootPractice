@@ -126,11 +126,14 @@
 					if(status == 'success'){
 						out +="<form id='cart-form' class='p-2 mx-auto justify-content-center row'>";
 						$.each(data, function(idx, item){
-							totalPrice += item.price * item.count;
 							out += "<div class='row p-4 w-100'>";
 							out += "<input type='hidden' name='num' value='" + item.num + "'/>";
 							out += "<input type='hidden' name='productId' value='" + item.productId + "'/>";
-							out += "<input type='hidden' name='product-price' value='"+item.price+"'/>";
+							if(item.status === '품절'){
+								out += "<input type='hidden' name='product-price' value='"+0+"'/>";
+							}else{
+								out += "<input type='hidden' name='product-price' value='"+item.price+"'/>";
+							}
 							out	+= "<span class='product-thumbnail col-3'>";
 							out	+= "<img src='"+item.thumbnail+"' class='img-thumbnail order-form-img p-2'/></span>";
 							out	+= "<div class='product-name col-3 font-weight-bold'>"+item.name+"</div>";
@@ -138,8 +141,14 @@
 							out += "<button type='button' class='btn btn-outline-light text-dark btn-inline' name='count-down' value='-'>-</button>";
 							out += "<input type='number' class='form-control w-50' name='count' pattern='[0-9]+' value='"+item.count+"'/>";
 							out += "<button type='button' class='btn btn-outline-light text-dark btn-inline' name='count-up' value='+'>+</button></div>";
-							out += "<div class='product-price'>"+item.price * item.count+"</div>원";
-							out += "<button type='button' name='cart-delete-btn' class='btn btn-outline-dark btn-inline mx-auto'>삭제</button></div>";
+							if(item.status === '품절'){
+								out += "<div>"+item.price * item.count+"</div>원";
+								out += "<button type='button' name='cart-delete-btn' class='btn btn-outline-dark btn-inline mx-auto' disabled>품절</button></div>";
+							}else{
+								totalPrice += item.price * item.count;
+								out += "<div class='product-price'>"+item.price * item.count+"</div>원";
+								out += "<button type='button' name='cart-delete-btn' class='btn btn-outline-dark btn-inline mx-auto'>삭제</button></div>";				
+							}
 						});
 						out += "<hr class='w-100'><div class='row w-100 m-2 p-2'>";
 						out += "<span class='h5 col-6'>총 금액</span><span id='total-price' class='h5 col-5'>"+totalPrice+"</span>원</div>";

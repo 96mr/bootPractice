@@ -24,6 +24,9 @@
                     <li class="nav-item active" role="presentation">
                     	<a class="nav-link" th:href="@{/cart}">장바구니</a>
                     </li>
+                     <li class="nav-item active" role="presentation">
+                    	<a class="nav-link" th:href="@{/order}">주문조회</a>
+                    </li>
                     <li class="nav-item active" role="presentation">
                     	<a class="nav-link" th:href="@{/product}" sec:authorize="hasRole('ROLE_ADMIN')">제품등록</a>
                     </li>

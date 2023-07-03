@@ -1,10 +1,13 @@
 package com.spring.bootPractice.order.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -34,6 +37,8 @@ public class Order {
 	private String address1;
 	private String address2;
 	private String address3;
+	@OneToMany(mappedBy ="orderId")
+	private List<OrderDetail> orderDetail = new ArrayList<>();
 	
 	@Builder
 	public Order(String id, String memberId, String receiverName, String receiverPhone, String address1, String address2, String address3) {

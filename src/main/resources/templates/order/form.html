@@ -85,7 +85,10 @@
 						}
 						if(status == 'success'){
 						 	$.each(data, function(idx, item){
-								out += makeOrderListHtml(item, idx);
+						 		console.log(item.status);
+						 		if(item.status !== '품절'){
+									out += makeOrderListHtml(item, idx);
+						 		}
 							});
 							$('.order-list').html(out);
 						}

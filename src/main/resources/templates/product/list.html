@@ -11,6 +11,7 @@
 							<div class="card-body">
 								<h6 class="card-title" th:text="${list.pname}"></h6>
 								<span class="card-text" th:text="${list.price}"></span>원
+								<span class="badge text-danger" th:unless="${#strings.equals(list.status, 'FOR_SALE')}" th:text="${list.status.getStatus()}"></span>
 							</div>
 						</div>
 					</div>

@@ -51,6 +51,7 @@ public class CartService {
 			json.addProperty("count", dto.getCount());
 			json.addProperty("price", dto.getProductId().getPrice());
 			json.addProperty("totalPrice", dto.getCount() * dto.getProductId().getPrice());
+			json.addProperty("status", dto.getProductId().getStatus().getStatus());
 			array.add(json);
 		}	
 		return array;

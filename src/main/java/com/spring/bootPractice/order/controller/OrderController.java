@@ -1,22 +1,31 @@
 package com.spring.bootPractice.order.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.spring.bootPractice.member.entity.Member;
 import com.spring.bootPractice.member.entity.MemberDetail;
 import com.spring.bootPractice.order.dto.OrderItemDto;
 import com.spring.bootPractice.order.dto.OrderPageDto;
+import com.spring.bootPractice.order.dto.OrderResponseDto;
 import com.spring.bootPractice.order.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,9 +41,47 @@ public class OrderController {
 		return "/order/cart";
 	}
 	
-	@GetMapping(value="/orders")
-	public String list(Model model) {
+	@GetMapping(value="/order")
+	public String list(@AuthenticationPrincipal MemberDetail memberDetail) {
+		if(memberDetail == null) {
+			return "/order/list";
+		}else {
+			return "forward:/member/order";
+		}
+	}
+
+	@GetMapping(value="/member/order")
+	public String list(@AuthenticationPrincipal MemberDetail memberDetail, Model model) {
+		Member member = memberDetail.getMember();
+		List<OrderResponseDto> list = orderService.getOrderList(member.getId());
+		model.addAttribute("list", list);
+		return "/member/order-list";
+	}
+	
+	@Secured({"ROLE_USER", "ROLE_ADMIN"})
+	@GetMapping(value="/order/{orderId}")
+	public String list(@PathVariable("orderId") String orderId, Model model) {
+		model.addAttribute("orderId", orderId);
 		return "/order/list";
+	}
+	
+	@ResponseBody
+	@GetMapping(value="/api/order/{orderId}")
+	public ResponseEntity<OrderPageDto> list(@PathVariable("orderId") String orderId,
+										@RequestParam(value="receiverName", required = false) String receiverName,
+										@AuthenticationPrincipal MemberDetail memberDetail){
+		OrderPageDto order = orderService.findByOrder(orderId);
+		if(memberDetail != null) {
+			Member member = memberDetail.getMember();
+			if(!order.getMemberId().equals(member.getId())) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+		}else {
+			if(!receiverName.equals(order.getReceiverName())) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+		}
+		return ResponseEntity.ok().body(order);
 	}
 	
 	@PostMapping(value="/order/form")

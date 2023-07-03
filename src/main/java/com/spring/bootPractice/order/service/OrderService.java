@@ -2,9 +2,12 @@ package com.spring.bootPractice.order.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +18,9 @@ import com.spring.bootPractice.order.dto.OrderDetailRequestDto;
 import com.spring.bootPractice.order.dto.OrderItemDto;
 import com.spring.bootPractice.order.dto.OrderPageDto;
 import com.spring.bootPractice.order.dto.OrderRequestDto;
+import com.spring.bootPractice.order.dto.OrderResponseDto;
 import com.spring.bootPractice.order.entity.Order;
+import com.spring.bootPractice.order.entity.OrderDetail;
 import com.spring.bootPractice.order.entity.Status;
 import com.spring.bootPractice.order.repository.CartRepository;
 import com.spring.bootPractice.order.repository.OrderDetailRepository;
@@ -99,10 +104,43 @@ public class OrderService {
 		dto.setOrderId(order.getId());
 		return dto;
 	}
-	/*
-	public List<OrderDetailResponseDto> list(int id){
-		
-	}*/
+	
+	public List<OrderResponseDto> getOrderList(String memberId) {
+		List<Order> list = orderRepository.findByMemberId(memberId);
+		return list.stream().map(OrderResponseDto::new).collect(Collectors.toList());
+	}
+	
+	public OrderPageDto findByOrder(String id) {
+		Order order = orderRepository.findById(id)
+						.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+		List<OrderDetail> detailList = order.getOrderDetail();
+		List<OrderItemDto> items = new ArrayList<>();
+		Iterator<OrderDetail> iterator = detailList.iterator();
+		while(iterator.hasNext()) {
+			OrderDetail d = iterator.next();
+			Image thumbnail = d.getProductId().getThumbnail().get(0);
+			OrderItemDto item = OrderItemDto.builder()
+										.productId(d.getProductId().getPid())
+										.name(d.getProductId().getPname())
+										.count(d.getCount())
+										.totalPrice(d.getPrice())
+										.thumbnail(thumbnail.getSave_name()+thumbnail.getExtension())
+										.status(d.getStatus().getStatus())
+										.build();
+			items.add(item);
+		}
+		return OrderPageDto.builder()
+							.orderId(order.getId())
+							.memberId(order.getMemberId())
+							.receiverName(order.getReceiverName())
+							.receiverPhone(order.getReceiverPhone())
+							.postcode(order.getAddress1())
+							.address(order.getAddress2())
+							.detailAddress(order.getAddress3())
+							.orderDate(order.getOrder_date())
+							.items(items)
+							.build();
+	}
 	
 	public OrderItemDto gerOrderItem(OrderItemDto dto){
 		  int id = dto.getProductId(); 
@@ -110,6 +148,10 @@ public class OrderService {
 		  Product product = productRepository.findByPid(id) 
 				  						.orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 		  
+		  if(product.getStatus() == ProductStatus.SOLD_OUT 
+					|| product.getStatus() == ProductStatus.DISCONTINUED) {
+			return new OrderItemDto();
+		  }
 		  Image img = product.getThumbnail().get(0); 
 		  OrderItemDto result = OrderItemDto.builder() 
 				  						.productId(id) 

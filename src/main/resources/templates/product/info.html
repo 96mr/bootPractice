@@ -88,6 +88,11 @@
 						$('.product-info-feature').html(data.pinfo);
 						$('.product-info-img').attr('src','/bootPractice/attach/'+data.thumbnail[0].save_name + data.thumbnail[0].extension);
 						$("input[name='productId']").val(data.pid);
+						if(data.status === 'SOLD_OUT'){
+						//	$("button[name='order-btn']").attr("disabled", true);
+							$("button[name='order-btn']").text("품절");
+						//	$("button[name='cart-btn']").remove();
+						}
 					}
 				},
 				error : function (xhr){

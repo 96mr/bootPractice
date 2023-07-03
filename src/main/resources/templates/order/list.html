@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" 
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout}">
 <div layout:fragment="content">
 	<div class="container w-50 text-center p-2 bg-white">
 		<h2 class="p-2 mb-4">주문 내역</h2>
-		<div id = "cart-list">
+		<div sec:authorize="isAnonymous()">
+			<form id="order-search-form" class="w-70 p-4 mx-auto justify-content-center row">
+				<input type="text" name="receiverName" class="form-control col-8 m-2" placeholder="주문자명을 입력해주세요.">
+				<input type="text" name="orderId" class="form-control col-8 m-2" placeholder="주문번호를 입력해주세요.">
+				<button type='button' class='btn btn-outline-dark w-50 m-2' name='guest-order-list'>조회</button>
+			</form>
+		</div>
+		<div id="order-detail-list">
 		</div>
 		<hr>
 	</div>
@@ -15,7 +23,99 @@
 			if(msg) {
 				alert(msg);
 			}
+			
+			var orderId = [[${orderId}]];
+			if(orderId != null){
+				$.ajax({
+					url:"/api/order/"+orderId,
+					type : "GET",
+					contentType : "application/json",
+					beforeSend: function(xhr){
+				        xhr.setRequestHeader(header, token);
+				    },
+					success : function(data, status) {
+						console.log(data);
+						var out = "";
+						if(status == 'nocontent'){
+							$('#order-list').html("주문내역이 없습니다.");
+						}
+						if(status == 'success'){
+							makeOrderDetailHtml(data)
+						}	
+					},
+					error : function(xhr, ajaxSettings, thrownError){
+						console.log(xhr);
+						$('#order-detail-list').html("오류가 발생했습니다.");
+					}
+				});
+			}
 		});
+		
+		$("button[name='guest-order-list']").on("click", function(){
+			var orderId = $("input[name='orderId']").val();
+			
+			$.ajax({
+				data : { receiverName : $("input[name='receiverName']").val() },
+				url:"/api/order/"+orderId,
+				type : "GET",
+				contentType : "application/json",
+				beforeSend: function(xhr){
+			        xhr.setRequestHeader(header, token);
+			    },
+				success : function(data, status) {
+					console.log(data);
+					var out = "";
+					if(status == 'nocontent'){
+						$('#order-list').html("주문내역이 없습니다.");
+					}
+					if(status == 'success'){
+						makeOrderDetailHtml(data)
+					}	
+				},
+				error : function(xhr, ajaxSettings, thrownError){
+					console.log(xhr);
+					$('#order-detail-list').html("오류가 발생했습니다.");
+				}
+			});
+		});
+		
+		function makeOrderDetailHtml(data){
+			var out = "";
+			const date = new Date(data.orderDate);
+			var payPrice = 0;
+		 	out += "<div class='row p-4 w-100 mb-2 justify-content-center'>";
+			out += "<div class='row p-4 w-100'>";
+			out += "<div class='col-6 h6 font-weight-bold text-left'>주문 날짜 : "+date.toLocaleDateString()+"</div></div>";
+		 	$.each(data.items, function(idx, item){
+		 		payPrice += item.totalPrice;
+				out += "<div class='row p-4 w-100'><span class='product-thumbnail col-3'>";
+				out += "<img src='/bootPractice/attach/"+item.thumbnail+"' class='img-thumbnail order-form-img p-2'/>";
+				out += "</span><div class='col-3'>";
+				out += "<div class='product-name'>"+item.name+"</div>";
+				out += "<div class='product-count'><span>수량 : "+item.count+"개</span></div>";
+				out += "<div class='product-price font-weight-bold'><span>"+item.totalPrice+"원</span></div></div>";
+				out += "<div class='col-6'>";
+				if(item.status === '배송완료'){
+					out += "<div><button type='button' class='btn btn-outline-dark btn-block w-50 mx-auto' name='cart-btn'>재구매</button>";
+					out	+= "<button type='button' class='btn btn-outline-dark btn-block w-50 mx-auto'>리뷰 작성</button></div>";
+				}else{
+					out += "<div>"+item.status+"</div>";
+				}
+				if(item.status !== '상품 준비중'){
+					out += "<div><button type='button' class='btn btn-outline-dark btn-block w-50 mx-auto'>배송조회</button></div></div>";
+				}
+				out += "</div><hr class='w-100'>";
+			});
+		 	out += "<div class='row p-4 w-100'>";
+		 	out += "<h5 class='row w-100 text-left font-weight-bold'>배송지 정보</h5><hr class='w-100'>";
+		 	out += "<div class='col-3 text-left font-weight-bold'>주문자명</div><div class='col-8 p-2 text-left'>"+data.receiverName+"</div>";
+		 	out += "<div class='col-3 text-left font-weight-bold'>연락처</div><div class='col-8 p-2 text-left'>"+data.receiverPhone+"</div>";
+		 	out += "<div class='col-3 text-left font-weight-bold'>주소</div><div class='col-8 p-2 text-left'>"+data.address+ data.detailAddress+"</div></div>";
+		 	out += "<hr class='w-100'><div class='row p-4 w-100'><h5 class='row w-100 text-left font-weight-bold'>결제 정보</h5><hr class='w-100'>";
+		 	out += "<div class='col-8 text-left font-weight-bold'>결제 금액</div><div class='col-3 p-2'>"+payPrice+"원</div></div>"
+			out += "</div>";						
+			$('#order-detail-list').html(out);
+		}
 	</script>
 </div>
 </html>

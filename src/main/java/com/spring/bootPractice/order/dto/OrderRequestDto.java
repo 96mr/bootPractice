@@ -2,6 +2,8 @@ package com.spring.bootPractice.order.dto;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotBlank;
+
 import com.spring.bootPractice.order.entity.Order;
 
 import lombok.Builder;
@@ -13,7 +15,9 @@ import lombok.Setter;
 public class OrderRequestDto {
 	private String id;
 	private String memberId;
+	@NotBlank
 	private String receiverName;
+	@NotBlank
 	private String receiverPhone;
 	private Date order_date;
 	private String address1;

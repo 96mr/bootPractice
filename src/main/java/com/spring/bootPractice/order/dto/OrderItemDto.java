@@ -16,13 +16,15 @@ public class OrderItemDto {
 	private int price;
 	private String thumbnail;
 	private Integer totalPrice;
+	private String status;
 	
 	@Builder
-	public OrderItemDto(int productId, int count, String name, String thumbnail, Integer totalPrice) {
+	public OrderItemDto(int productId, int count, String name, String thumbnail, Integer totalPrice, String status) {
 		this.productId = productId;
 		this.count = count;
 		this.name = name;
 		this.thumbnail = thumbnail;
 		this.totalPrice = totalPrice;
+		this.status = status;
 	}
 }
