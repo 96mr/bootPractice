@@ -55,7 +55,7 @@ public class OrderController {
 		Member member = memberDetail.getMember();
 		List<OrderResponseDto> list = orderService.getOrderList(member.getId());
 		model.addAttribute("list", list);
-		return "/member/order-list";
+		return "/member/order";
 	}
 	
 	@Secured({"ROLE_USER", "ROLE_ADMIN"})
@@ -84,6 +84,9 @@ public class OrderController {
 		return ResponseEntity.ok().body(order);
 	}
 	
+	/*
+	 * 제품 페이지에서 바로 구매 버튼을 클릭한 경우
+	 */
 	@PostMapping(value="/order/form")
 	public String orderForm(OrderItemDto dto, HttpServletRequest request, Model model) {
 		HttpSession session = request.getSession();
@@ -96,6 +99,9 @@ public class OrderController {
 		return "/order/form";
 	}
 	
+	/*
+	 * 장바구니에서 구매 버튼을 클릭한 경우
+	 */
 	@GetMapping(value="/order/form")
 	public String orderForm(Model model) {
 		model.addAttribute("order", new OrderPageDto());

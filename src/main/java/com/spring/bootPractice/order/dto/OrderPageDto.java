@@ -31,6 +31,10 @@ public class OrderPageDto {
 	@NotNull
 	private List<OrderItemDto> items;
 	
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+	
 	@Builder
 	public OrderPageDto(String orderId, String memberId, String receiverName, String receiverPhone, String postcode, 
 			String address, String detailAddress, Date orderDate, List<OrderItemDto> items) {

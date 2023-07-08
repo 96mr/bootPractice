@@ -11,5 +11,5 @@ import com.spring.bootPractice.order.entity.Order;
 @Repository
 public interface OrderRepository extends JpaRepository<Order,Integer> {
 	public Optional<Order> findById(String id);
-	public List<Order> findByMemberId(String memberId);
+	public List<Order> findByMemberIdOrderByOrderDateDesc(String memberId);
 }

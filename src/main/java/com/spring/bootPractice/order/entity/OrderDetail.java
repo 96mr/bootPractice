@@ -1,5 +1,6 @@
 package com.spring.bootPractice.order.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -9,12 +10,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
 
 import com.spring.bootPractice.product.entity.Product;
+import com.spring.bootPractice.review.entity.Review;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -31,7 +35,7 @@ public class OrderDetail {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="ORDER_DETAIL_GEN_SEQ")
 	private int id;
-	@ManyToOne(fetch= FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name="order_id")
 	private Order orderId;
 	@ManyToOne(fetch= FetchType.LAZY)
@@ -41,6 +45,9 @@ public class OrderDetail {
 	private int price;
 	@Enumerated(EnumType.STRING)
 	private Status status; // 배송 상태 enum으로 만들기
+	@OneToOne(mappedBy = "orderDetail", fetch = FetchType.LAZY)
+	@PrimaryKeyJoinColumn
+	private Review review;
 	
 	@Builder
 	public OrderDetail(Order orderId, Product productId, int count, int price, Status status) {

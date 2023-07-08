@@ -62,48 +62,90 @@
 			<h5>상품 설명</h5>
 			<div class="p-4 product-info-feature"></div>
 		</div>
+		<hr>
+		<div class="mt-4 mb-4">
+			<h5>제품 후기</h5>
+			<div class="p-4 product-review">
+				
+			</div>
+		</div>
+		<hr>
 		<div>
-			<a th:href="@{/product/modify/{id} (id = ${productId})}" sec:authorize="hasRole('ROLE_ADMIN')">제품 정보 수정</a>
+			<a th:href="@{/product/modify/{id} (id = ${productId})}" class='btn btn-outline-dark w-50 m-2' sec:authorize="hasRole('ROLE_ADMIN')">수정</a>
 		</div>
 	</div>
 	<script th:inline="javascript">		
-		$(document).ready(function(){
-			var msg = [[${msg}]];
-			if(msg) {
-				alert(msg);
-			}
-			
-			var productId = [[${productId}]];
-			$.ajax({
-				type : "GET",
-				url : "/api/product/"+productId,
-				contentType : "application/json",
-				beforeSend: function(xhr){
-			        xhr.setRequestHeader(header, token);
-			    },
-				success : function(data, status) {
-					if(status == 'success'){
-						$('.product-info-name').text(data.pname);
-						$('.product-info-price').text(data.price+'원');
-						$('.product-info-feature').html(data.pinfo);
-						$('.product-info-img').attr('src','/bootPractice/attach/'+data.thumbnail[0].save_name + data.thumbnail[0].extension);
-						$("input[name='productId']").val(data.pid);
-						if(data.status === 'SOLD_OUT'){
-						//	$("button[name='order-btn']").attr("disabled", true);
-							$("button[name='order-btn']").text("품절");
-						//	$("button[name='cart-btn']").remove();
-						}
+	$(document).ready(function(){
+		var msg = [[${msg}]];
+		if(msg) {
+			alert(msg);
+		}
+		
+		var productId = [[${productId}]];
+		$.ajax({
+			type : "GET",
+			url : "/api/product/"+productId,
+			contentType : "application/json",
+			beforeSend: function(xhr){
+		        xhr.setRequestHeader(header, token);
+		    },
+			success : function(data, status) {
+				if(status == 'success'){
+					$('.product-info-name').text(data.pname);
+					$('.product-info-price').text(data.price+'원');
+					$('.product-info-feature').html(data.pinfo);
+					$('.product-info-img').attr('src','/bootPractice/attach/'+data.thumbnail[0].save_name + data.thumbnail[0].extension);
+					$("input[name='productId']").val(data.pid);
+					if(data.status === 'SOLD_OUT'){
+						$("button[name='order-btn']").attr("disabled", true);
+						$("button[name='order-btn']").text("품절");
+						$("button[name='cart-btn']").remove();
 					}
-				},
-				error : function (xhr){
-					if(xhr.status == 404){
-						$('.product-info').text("존재하지 않는 상품입니다");
-						$('.product-info-feature').html("존재하지 않는 상품 페이지입니다.");
-					}
-						
 				}
-			});
+			},
+			error : function (xhr){
+				if(xhr.status == 404){
+					$('.product-info').text("존재하지 않는 상품입니다");
+					$('.product-info-feature').html("존재하지 않는 상품 페이지입니다.");
+				}
+					
+			}
 		});
+		
+		$.ajax({
+			type : "GET",
+			url : "/api/review/"+productId,
+			contentType : "application/json",
+			beforeSend: function(xhr){
+		        xhr.setRequestHeader(header, token);
+		    },
+			success : function(data, status) {
+				if(status == 'nocontent'){
+					$('.product-review').html("작성된 리뷰가 없습니다.");
+				}
+				else if(status == 'success'){
+					var out = "";
+					$.each(data, function(idx, item){
+						var date = new Date(item.regdate);
+						out += "<div class='row p-3 w-100 mb-2 border-top border-bottom'><div class='col-9'>";
+						out += "<div class='rating text-left'>";
+						for(var i = 0 ; i < item.rating ; i++){
+							out += "<span><i class='rating__star far fa-star'></i></span>";
+						}
+						out += "<span class='font-weight-bold'>"+ item.rating +"</span></div></div>";
+						out += "<div class='col-12 text-left m-2 p-2'>";
+						out += "<div class='col-6 h6 font-weight-bold'>"+item.memberName+"</div>";
+						out += "<div class='col-6 h6'>"+date.toLocaleDateString()+"</div>";
+						out += "<div class='col-12 text-left m-2 p-2'>";
+						out += "<span class=''>"+item.productName+"</span>,";
+						out += "<span class=''>수량 : <span>"+item.count+"</span> 개</span></div></div>";
+						out += "<div class='col-12 text-left p-2'>"+item.content+"</div></div>";
+					});
+					$('.product-review').html(out);
+				}
+			}
+		});
+	});
 	</script>
 	<script>
 		const productOrderForm = $('#product-order-form');
@@ -126,10 +168,10 @@
 				}
 		);
 		
-		productOrderForm.find('button[name=cart-btn]').on("click", function(e){			
+		$('button[name=cart-btn]').on("click", function(e){			
 			var data = {
-					productId : productOrderForm.find("input[name='productId']").val(),
-					count : productOrderForm.find("input[name='count']").val()
+					productId : $("input[name='productId']").val(),
+					count : $("input[name='count']").val()
 			}	
 			$.ajax({
 				data : JSON.stringify(data),
@@ -151,7 +193,7 @@
 			e.preventDefault();
 		});
 		
-		productOrderForm.find('button[name=order-btn]').on("click", function(e){
+		$('button[name=order-btn]').on("click", function(e){
 			$("#order-modal").modal('show');
 		});
 		

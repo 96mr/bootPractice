@@ -14,7 +14,7 @@ public class OrderResponseDto {
 	private String memberId;
 	private String receiverName;
 	private String receiverPhone;
-	private Date order_date;
+	private Date orderDate;
 	private String address1;
 	private String address2;
 	private String address3;
@@ -25,7 +25,7 @@ public class OrderResponseDto {
 		this.memberId = order.getMemberId();
 		this.receiverName = order.getReceiverName();
 		this.receiverPhone = order.getReceiverPhone();
-		this.order_date = order.getOrder_date();
+		this.orderDate = order.getOrderDate();
 		this.address1 = order.getAddress1();
 		this.address2 = order.getAddress2();
 		this.address3 = order.getAddress3();

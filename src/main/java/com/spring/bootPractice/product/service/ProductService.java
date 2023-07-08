@@ -84,14 +84,14 @@ public class ProductService {
 	public ProductRequestDto parseProductRequestDto(ProductResponseDto dto) {
 		Optional<Category> category = categoryRepository.findById(dto.getPcategory());
 		ProductRequestDto requestDto = ProductRequestDto.builder()
-				.pid(dto.getPid())
-				.pname(dto.getPname())
-				.pcategory(category.get())
-				.pinfo(dto.getPinfo())
-				.price(dto.getPrice())
-				.status(dto.getStatus())
-				.thumbnail(dto.getThumbnail())
-				.build();
+													.pid(dto.getPid())
+													.pname(dto.getPname())
+													.pcategory(category.get())
+													.pinfo(dto.getPinfo())
+													.price(dto.getPrice())
+													.status(dto.getStatus())
+													.thumbnail(dto.getThumbnail())
+													.build();
 		return requestDto;
 	}
 	

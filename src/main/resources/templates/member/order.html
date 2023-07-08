@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout2}">
+<div layout:fragment="content">
+	<div class="p-2">
+		<h3 class="text-center p-4">주문 내역</h3>
+		<div id="order-list">
+			<div class='row p-4 w-100 mb-2 justify-content-center' th:each = "order : ${list}">
+				<div class='row p-4 w-100' >
+					<div class='col-6 h6 font-weight-bold text-left' th:text="${#dates.format(order.orderDate, 'yyyy.MM.dd.')}"></div>
+					<a class='col-6 h6 font-weight-bold text-right' th:href="@{/order/{orderId}(orderId = ${order.id})}">상세내역보기</a>
+				</div>
+				<div class='row p-4 w-100' th:each ="m :${order.orderDetail}">
+					<span class='product-thumbnail col-3'>
+						<img th:src="'/bootPractice/attach/' +${m.productId.thumbnail[0].save_name}+${m.productId.thumbnail[0].extension}" class='img-thumbnail order-form-img p-2'/>
+					</span>
+					<div class='col-9 row'>
+						<div class="col-4">
+							<div class='product-name' th:text="${m.productId.pname}"></div>
+							<div class='product-count'>수량 : <span th:text="${m.count}"></span> 개</div>
+							<div class='product-price font-weight-bold'><span th:text="${m.price}"></span> 원</div>
+						</div>
+						<div class='col-8'>
+							<div class='p-2 w-100' th:text="${m.status.getStatus()}"></div>
+							<div th:if="${#strings.equals(m.status, 'Delivered')}">
+								<form name='re-cart' method='post'>
+									<input type="hidden" name='productId' th:value='${m.productId.pid}'>
+									<input type="hidden" name='count' th:value='${m.count}'>
+									<button type="button" name='cart-btn' class="btn btn-outline-dark w-40">재구매</button>
+								</form>
+								<form name='review' method='get'>
+									<input type="hidden" name='orderId' th:value='${m.id}'>
+									<button type="submit" th:if='${#strings.isEmpty(m.review)}' formaction="/review" class="btn btn-outline-dark w-40">리뷰 작성</button>
+								</form>
+								<a th:href="@{/member/review/{orderId}(orderId = ${m.id})}" th:unless='${#strings.isEmpty(m.review)}' class="btn btn-outline-dark w-40">리뷰 조회</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr class='w-100'>
+			</div>
+		</div>
+		
+		<div id="cart-modal" class="modal" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">장바구니에 추가되었습니다.</h5>
+					</div>
+					<div class="modal-body">
+						<button type="button" class="btn btn-light" name="move-btn" th:onclick="|location.href='@{/cart}'|">장바구니로 이동</button>
+						<button type="button" class="btn btn-light" data-dismiss="modal">더 둘러보기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script th:inline="javascript">
+		$(document).ready(function(){
+			var msg = [[${errorMsg}]];
+			if(msg) {
+				alert(msg);
+			}
+		});
+		
+		$('button[name=cart-btn]').on("click", function(e){			
+			var data = {
+					productId : $(this).siblings("input[name='productId']").val(),
+					count : $(this).siblings("input[name='count']").val()
+			}	
+			$.ajax({
+				data : JSON.stringify(data),
+				type : "POST",
+				url : "/api/cart/",
+				contentType : "application/json",
+				beforeSend: function(xhr){
+			        xhr.setRequestHeader(header, token);
+			    },
+				success : function(data, status) {
+					e.preventDefault();
+					if(status == 'success'){
+						$("#cart-modal").modal('show');
+					}else{
+						alert("다시 시도해주세요.");
+					}
+				}
+			});
+			e.preventDefault();
+		});
+	</script>
+</div>
+</html>

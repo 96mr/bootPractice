@@ -23,6 +23,8 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.DynamicInsert;
 
+import com.spring.bootPractice.review.entity.Review;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,6 +56,8 @@ public class Product {
 	private int hit;	
 	@OneToMany(mappedBy="pid", fetch = FetchType.EAGER)
 	private List<Image> thumbnail = new ArrayList<>();
+	@OneToMany(mappedBy="orderId")
+	private List<Review> review = new ArrayList<>();
 	
 	@Builder
 	public Product(String pname, Category pcategory, String pinfo, int price, ProductStatus status) {

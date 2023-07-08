@@ -4,16 +4,15 @@
       layout:decorate="~{layout2}">
 <div layout:fragment="content">
 	<h3 class="text-center p-4" th:text="'회원 페이지'"></h3>
-	<div class="row">
-		<div class="col-md-12">
+	<div class="row justify-content-center">
+		<div class="col-md-10 border m-2 p-4">
 			<span class="text-center h5" th:text="${member.name}"></span>님
 		</div>
-		<div class="col-md-12 p-4">
+		<div class="col-md-10 border m-2 p-4">
 			<div>
 				<span class="text-center h5 p-4">주문/배송 조회</span>
-				<a th:href="@{/member/order}">주문 상세</a>
 			</div>
-			<div class="m-2 p-2 font-weight-bold">
+			<div class="m-2 p-4 font-weight-bold ">
 				<span class="m-2">상품 준비중</span> > 
 				<span class="m-2">출고 완료</span> > 
 				<span class="m-2">배송중</span> > 
@@ -28,11 +27,11 @@
 				</div>
 				<div class="col-md-3 m-2 p-4 border rounded">
 					<i class="fas fa-pen fa-3x d-block p-4"></i>
-					<a th:href="@{/member/review}">리뷰</a>
+					<a th:href="@{/member/review}">후기 내역</a>
 				</div>
 				<div class="col-md-3 m-2 p-4 border rounded">
 					<i class="fas fa-pen fa-3x d-block p-4"></i>
-					<a th:href="@{/}">X</a>
+					<a th:href="@{/member/order}">주문 내역</a>
 				</div>
 			</div>
 		</div>

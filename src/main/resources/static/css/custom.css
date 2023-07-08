@@ -22,3 +22,27 @@ body{height:100%;margin:0;padding:0;}
 #content{min-height:100vh;}
 li.dropdown:hover > ul.dropdown-menu {display:block; margin:0;}
 .product-name:hover{cursor:pointer;color:blue;}
+#review-form input[type=radio]{display:none;}
+#review-form label{
+	font-size:2em;
+    color: transparent;
+    text-shadow: 0 0 0 #f0f0f0;
+}
+#review-form fieldset{
+    display: inline-block;
+    border: 0; 
+}
+#review-form label:hover{
+    text-shadow: 0 0 0 #FFE900; 
+}
+#review-form label:hover ~ label{
+    text-shadow: 0 0 0 #FFE900; 
+}
+#review-form fieldset{
+    display: inline-block; 
+    direction: rtl;
+    border: 0;
+}
+#review-form input[type=radio]:checked ~ label{
+    text-shadow: 0 0 0 #FFE900;
+}

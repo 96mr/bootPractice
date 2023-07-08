@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout2}">
+<div layout:fragment="content">
+	<div class="p-2">
+		<h3 class="text-center p-4">리뷰 조회</h3>
+		<div id="review-detail">
+			<div class='row p-3 w-100 mb-2 border-top border-bottom'>
+				<div class='col-9'>
+					<div class="rating text-left">
+						<span th:each="num: ${#numbers.sequence(1, review.rating)}">
+							<i class="rating__star far fa-star"></i>
+						</span>
+						<span class='font-weight-bold' th:text='${review.rating}'></span>
+					</div>
+				</div>
+				<div class='col-12 text-left m-2 p-2'>
+					<div class='col-6 h6 font-weight-bold' th:text="${review.memberId.name}"></div>
+					<div class='col-6 h6' th:text="${#dates.format(review.regdate, 'yyyy.MM.dd.')}"></div>
+					<div class='col-12 text-left m-2 p-2'>
+						<span class='product-name' th:text="${review.productId.pname}"></span>,
+						<span class='product-count'>수량 : <span th:text="${review.orderDetail.count}"></span> 개</span>
+					</div>
+				</div>
+				<div class='col-12 text-left p-2' th:text="${review.content}">
+				</div>
+			</div>
+		</div>
+	</div>
+	<script th:inline="javascript">
+		$(document).ready(function(){
+			var msg = [[${errorMsg}]];
+			if(msg) {
+				alert(msg);
+			}
+		});
+		
+		$("button[name='review-btn']").on("click", function(){
+			$(this).siblings("input[name='orderDetail']").val();
+		});
+	</script>
+</div>
+</html>

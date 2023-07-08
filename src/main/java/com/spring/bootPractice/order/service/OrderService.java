@@ -68,14 +68,14 @@ public class OrderService {
 		}
 		
 		OrderRequestDto orderDto = OrderRequestDto.builder()
-												.id(id)
-												.memberId(memberId)
-												.receiverName(dto.getReceiverName())
-												.receiverPhone(dto.getReceiverPhone())
-												.address1(dto.getPostcode())
-												.address2(dto.getAddress())
-												.address3(dto.getDetailAddress())
-												.build();
+								.id(id)
+								.memberId(memberId)
+								.receiverName(dto.getReceiverName())
+								.receiverPhone(dto.getReceiverPhone())
+								.address1(dto.getPostcode())
+								.address2(dto.getAddress())
+								.address3(dto.getDetailAddress())
+								.build();
 		Order order = orderRepository.save(orderDto.toEntity());
 
 		Iterator<OrderItemDto> iterator = dto.getItems().iterator();
@@ -106,7 +106,7 @@ public class OrderService {
 	}
 	
 	public List<OrderResponseDto> getOrderList(String memberId) {
-		List<Order> list = orderRepository.findByMemberId(memberId);
+		List<Order> list = orderRepository.findByMemberIdOrderByOrderDateDesc(memberId);
 		return list.stream().map(OrderResponseDto::new).collect(Collectors.toList());
 	}
 	
@@ -129,17 +129,18 @@ public class OrderService {
 										.build();
 			items.add(item);
 		}
+
 		return OrderPageDto.builder()
-							.orderId(order.getId())
-							.memberId(order.getMemberId())
-							.receiverName(order.getReceiverName())
-							.receiverPhone(order.getReceiverPhone())
-							.postcode(order.getAddress1())
-							.address(order.getAddress2())
-							.detailAddress(order.getAddress3())
-							.orderDate(order.getOrder_date())
-							.items(items)
-							.build();
+				.orderId(order.getId())
+				.memberId(order.getMemberId())
+				.receiverName(order.getReceiverName())
+				.receiverPhone(order.getReceiverPhone())
+				.postcode(order.getAddress1())
+				.address(order.getAddress2())
+				.detailAddress(order.getAddress3())
+				.orderDate(order.getOrderDate())
+				.items(items)
+				.build();
 	}
 	
 	public OrderItemDto gerOrderItem(OrderItemDto dto){

@@ -11,8 +11,10 @@ public enum ErrorCode {
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다"),
 	PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 상품입니다"),
 	CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니에 존재하지 않습니다"),
+	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문이 존재하지 않습니다"),
 	DUPLICATED_USER_ID(HttpStatus.CONFLICT,"중복된 아이디입니다"),
 	DUPLICATED_USER_EMAIL(HttpStatus.CONFLICT,"중복된 이메일입니다"),
+	DUPLICATED_REVIEW(HttpStatus.CONFLICT,"이미 리뷰를 작성했습니다"),
 	
 	BAD_REQUEST(HttpStatus.BAD_REQUEST,"잘못된 요청입니다"),
 	NO_HANDLER_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 페이지입니다"),

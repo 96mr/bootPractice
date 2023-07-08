@@ -19,7 +19,7 @@ public class OrderRequestDto {
 	private String receiverName;
 	@NotBlank
 	private String receiverPhone;
-	private Date order_date;
+	private Date orderDate;
 	private String address1;
 	private String address2;
 	private String address3;
