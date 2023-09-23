@@ -9,8 +9,8 @@
 ## 사용 기술
 __Back-end__
 * Java 8
-* Spring Boot
-* Spring Security
+* Spring Boot 2.6
+* Spring Security 5
 * JPA
 * Oracle
 
@@ -33,3 +33,10 @@ __Front-end__
 * 장바구니
   * 장바구니 조회
   * 제품 수량 변경, 삭제
+* 주문
+  * 장바구니 -> 주문
+  * 바로구매 -> 주문
+  * 주문 조회
+* 리뷰
+  * 리뷰 작성
+  * 리뷰 조회
