@@ -10,7 +10,7 @@ __Back-end__
 * Java 8
 * Spring Boot 2.6
 * Spring Security 5
-* JPA
+* Spring-Data-JPA
 * Oracle
 
 
@@ -18,6 +18,7 @@ __Front-end__
 * HTML
 * CSS
 * JavaScript(JQuery)
+* BootStrap
 
 ## Notion & Blog
 [Notion](https://spotty-gardenia-d4a.notion.site/b0bfa1fe9dba401da530ccf37403a9a2?pvs=4)
@@ -28,30 +29,12 @@ __Front-end__
 * 회원
   * 회원가입
   * 로그인, 로그아웃
+  * 회원 페이지 권한 체크
+  * 배송지 등록, 변경
 * 제품
   * 제품 등록
   * 제품 조회
   * 장바구니 담기
-* 회원 페이지
-  <details>
-   <summary>
-    권한 체크
-   </summary>
-   
-    //SecurityConfiguration
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-		    http
-			    .authorizeHttpRequests((authz)->authz			//요청에 대한 권한 설정
-							.antMatchers("/member/**").hasAnyRole("GUEST","USER","ADMIN")
-							.antMatchers("/admin/**").hasRole("ADMIN")
-							.antMatchers("/**").permitAll()
-							.anyRequest().authenticated()
-       );
-    }
-   
-  </details>
-  * 배송지 등록, 변경
 * 장바구니
   * 장바구니 조회
   * 제품 수량 변경, 삭제
