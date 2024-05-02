@@ -1,7 +1,6 @@
 ## 쇼핑몰
 > Spring boot 기반으로 진행한 개인 프로젝트입니다.
 
-### [블로그](https://cookie9606.tistory.com/115)
 
 ## 제작 기간
 2023년 4월 10일 ~ (진행중)
@@ -20,6 +19,11 @@ __Front-end__
 * CSS
 * JavaScript(JQuery)
 
+## Notion & Blog
+[Notion](https://spotty-gardenia-d4a.notion.site/b0bfa1fe9dba401da530ccf37403a9a2?pvs=4)
+
+[Blog](https://cookie9606.tistory.com/115)
+
 ## 기능
 * 회원
   * 회원가입
@@ -29,6 +33,24 @@ __Front-end__
   * 제품 조회
   * 장바구니 담기
 * 회원 페이지
+  <details>
+   <summary>
+    권한 체크
+   </summary>
+   
+    //SecurityConfiguration
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+		    http
+			    .authorizeHttpRequests((authz)->authz			//요청에 대한 권한 설정
+							.antMatchers("/member/**").hasAnyRole("GUEST","USER","ADMIN")
+							.antMatchers("/admin/**").hasRole("ADMIN")
+							.antMatchers("/**").permitAll()
+							.anyRequest().authenticated()
+       );
+    }
+   
+  </details>
   * 배송지 등록, 변경
 * 장바구니
   * 장바구니 조회
