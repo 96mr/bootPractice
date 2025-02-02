@@ -9,9 +9,9 @@
 ## 기술 스택
 ![Java 8](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring Boot 2.6](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
-![Spring-Data-JPA](https://img.shields.io/badge/SpringDataJPA-000000?style=for-the-badge&logo=SpringDataJPA&logoColor=white)
+![Spring-Data-JPA](https://img.shields.io/badge/Spring-Data-JPA-000000?style=for-the-badge&logo=SpringDataJPA&logoColor=white)
 ![Oracle](https://img.shields.io/badge/oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white)
-![Thymeleaf](https://img.shields.io/badge/Thymleaf-2c83b9?style=for-the-badge&logo=thymeleaf&logoColor=white) 
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-2c83b9?style=for-the-badge&logo=thymeleaf&logoColor=white) 
 
 ---
 ## 기능
